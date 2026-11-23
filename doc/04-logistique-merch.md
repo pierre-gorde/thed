@@ -32,7 +32,7 @@ Prix par colis non trouvés sur les pages lues. Ordre de grandeur à vérifier :
 
 ## Points encore ouverts
 
-- **Zone** : France seule au départ, Europe ensuite ? (question posée)
+- **Zone** : Europe si c'est simple, sinon France seule. On démarre France, on ouvre l'Europe si les tarifs d'envoi restent clairs.
 - **Emballage** :
   - t-shirt : enveloppe ou pochette souple ;
   - poster : **tube carton** obligatoire, à acheter en avance (format du poster inconnu).
