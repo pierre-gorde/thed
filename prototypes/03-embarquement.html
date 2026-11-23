@@ -43,6 +43,9 @@
   .snd { display: inline-flex; align-items: center; gap: 7px; font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 9px 11px; border: 1px solid rgba(255,255,255,.3); border-radius: 999px; background: rgba(6,10,20,.35); color: var(--ink); cursor: pointer; }
   .snd .eq { opacity: 1; height: 11px; color: var(--ink-soft); }
   .snd.on .eq { color: var(--canopy); }
+  .snd:not(.on) { animation: invite 2.2s ease-in-out infinite; }
+  @keyframes invite { 50% { border-color: var(--canopy); box-shadow: 0 0 0 4px rgba(63,214,198,.18); } }
+  @media (prefers-reduced-motion: reduce) { .snd:not(.on) { animation: none; } }
   .snd .eq i { width: 2px; }
   .bag { font: 600 13px/1 var(--mono); letter-spacing: .04em; padding: 9px 12px; border: 1px solid rgba(255,255,255,.3); border-radius: 999px; background: rgba(6,10,20,.35); color: var(--ink); cursor: pointer; white-space: nowrap; }
   .bag.bump { animation: bump .45s ease; }
@@ -239,7 +242,7 @@
 <div class="bar" id="bar">
   <a class="logo" href="#top" aria-label="Thed"><svg viewBox="0 0 354.96 107.66" aria-hidden="true"><path d="M144.19,11.76c4.35,5.07,5.83,12.76,2.59,18.77-.69,1.84-1.38,3.69-2.06,5.53,20.97-6.01,40.89.91,42.66,24.86.05,7.57-.72,18.81-3.6,28.16-3.18,10.36-12.88,17.61-23.7,16.95-13.9-.84-21.27-18.96-17.67-37.51.34,13.08-6.67,26.11-17.77,33.03-3.32,2.07-7.11,3.65-11.03,3.57-5.27-.11-10.14-3.29-13.31-7.5-3.17-4.22-4.83-9.37-5.9-14.54-4.57-22.06,1.23-46.05,15.38-63.58,6.57-8.14,16.66-15.37,26.77-12.68,3.03.81,5.64,2.58,7.64,4.91Z"/><path d="M354.38,64.99c-1.99-9.95-3.47-22.32-2.74-32.44.4-1.92.79-3.85,1.19-5.78,2.27-6.44-.38-13.81-5.46-18.15-2.33-1.99-5.18-3.35-8.3-3.68-10.4-1.09-19.26,7.61-24.49,16.66-2.29,3.96-4.2,8.14-5.72,12.45-2.19-2.76-5.08-3.87-8.33-3.66-.06,0-.13,0-.19.01-.03,0-.06.01-.09.01-.27.03-.54.06-.81.1-.05,0-.09.01-.14.02-19.32,2.62-30.89,22.3-32.3,40.47-.39,4.98.02,10.11,1.47,14.9.03.1.06.19.11.27.92,3.84,2.52,7.57,4.92,11.07,3.76,5.47,10.07,8.47,16.35,8.87,7.48.49,17.49-4.26,22.98-11.57,1.24,2.08,2.7,4.02,4.44,5.7,3.78,3.68,9.08,6.06,14.31,5.36,3.88-.52,7.38-2.67,10.34-5.23,9.9-8.56,14.81-22.51,12.46-35.38ZM294.33,77.16c-.64,1.06-.85,1.2-1.81,1.06-.91-.15-1.53-1.33-1.42-3.11.05-.86.49-2.34.49-2.34,0,0,.88-2.05,1.73-2.33.85-.3,1.56-.15,1.83,1.16.27,1.3-.2,4.53-.82,5.56Z"/><path d="M96.33,17.16c-5.59-6.01-17.54-9.02-28.49-9.25-1.26-1.86-2.82-3.5-4.58-4.79C60.69,1.22,57.68.06,54.53,0c-6.72-.12-12.33,3.96-16.57,9.56C25.28,10.87,7.53,19,1.92,29.2c-6.61,12.19,5.38,19.89,12.74,21.03,3.8.77,7.62.91,11.43.61-.1,13.27,2.78,26.67,8.59,38.64,2.44,5.05,5.46,9.95,9.68,13.49,4.21,3.53,9.79,5.56,14.91,4.32,3.81-.92,7.04-3.52,9.68-6.51,8.84-10,12.04-25.23,8.13-38.64-1.68-5.47-3.31-11.67-4.54-17.89,5.21-.64,10.32-1.92,15.18-4.27,6.61-2.86,17.4-12.99,8.61-22.82ZM51.06,44.46h-.09l.18-.02.21-.04s-.07.02-.1.03c-.03.02-.07.03-.1.04-.03,0-.07,0-.1-.01Z"/><path d="M260.6,79.38s-.06-.06-.09-.09c-.05-.04-.11-.09-.17-.13-.76-.63-1.7-1-2.84-1.07-1.35-.08-2.97.29-4.86,1.24-1.15.57-2.21,1.31-3.18,2.15-1.56,1.35-3.38,1.95-4.98,2.01-2.78.12-4.86-1.4-3.59-3.5.52-.85,1.39-1.41,2.33-1.7,12.63-3.83,23.77-14.48,23.89-27.74-.25-15-13.85-20.28-27.79-20.35-7.77-.06-15.64,1.51-21.37,3.9-13.67,4.73-24.42,19.11-26.34,33.76-1.86,14.22,3.45,28.87,18,35.93,2.65,1.17,5.46,2.03,8.35,2.6,9.57.47,30.07.13,40.7-10.28,3.05-3.91,4.15-7.69,4.03-10.82.01-.06.01-.11,0-.17-.11-2.36-.91-4.34-2.08-5.73h-.01ZM232.17,50.84c-.43-.82.16-2.03,1.65-2.99.26-.17.6-.34.95-.5.88-.4,1.83-.67,2.8-.72.2,0,.39-.01.58,0h.02c.3.03.56.1.74.22.73.52,1.04,1.18.15,2.17-.89,1-3.77,2.53-4.97,2.64-.08.01-.16.01-.24.02-.99.02-1.3-.15-1.67-.85Z"/></svg></a>
   <div class="right">
-    <button class="snd" id="snd" type="button" aria-label="Activer le son"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="sndT">Son</span></button>
+    <button class="snd" id="snd" type="button" aria-label="Activer le son"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="sndT">Son off</span></button>
     <button class="bag" id="bag" type="button">Panier · <span id="count">0</span></button>
   </div>
 </div>
@@ -538,7 +541,9 @@
     if (gesture) setupGraph();
     play(4).then(() => { if (!audio.paused) { autoDone = true; disarm(); } }).catch(() => { started = audio.paused ? started : true; });
   };
-  const onGesture = () => tryAuto(true), onFirstScroll = () => tryAuto(false);
+  // a tap on a player control is handled by that control (otherwise it would start then instantly stop the sound)
+  const CTRL = "#snd, .ply, .trk, #heroPlay, #prev, #next, #seek, #miniGo";
+  const onGesture = e => { if (e && e.target && e.target.closest && e.target.closest(CTRL)) return; tryAuto(true); }, onFirstScroll = () => tryAuto(false);
   const GEST = ["pointerdown", "touchend", "keydown", "click"];
   const disarm = () => { GEST.forEach(ev => removeEventListener(ev, onGesture, true)); removeEventListener("scroll", onFirstScroll); };
   GEST.forEach(ev => addEventListener(ev, onGesture, { capture: true, passive: true }));
@@ -553,7 +558,7 @@
     const on = !audio.paused;
     [deck, mini].forEach(el => el.classList.toggle("playing", on));
     document.querySelectorAll(".ply").forEach(b => b.setAttribute("aria-label", on ? "Pause" : "Lecture"));
-    snd.classList.toggle("on", on); sndT.textContent = on ? "Son" : "Coupé"; snd.setAttribute("aria-label", on ? "Couper le son" : "Activer le son");
+    snd.classList.toggle("on", on); sndT.textContent = on ? "Son on" : "Son off"; snd.setAttribute("aria-label", on ? "Couper le son" : "Activer le son");
     if (on) { autoDone = true; disarm(); }
     lis.forEach((li, k) => li.classList.toggle("on", started && k === idx));
     showMini();
