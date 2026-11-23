@@ -32,7 +32,7 @@ On livre 1 à 3 propositions de concept, **dans une étape suivante**. Ce doc ne
   - Devant : avion en papier + « PLDV » au marqueur.
   - Dos : oiseau sur un avion en papier, titre de l'EP, tracklist, « Allez, t'as juste à sauter dans le vide. », signature THED.
 - Stock déjà reçu par Théo et Pej. L'expédition n'est pas encore pensée : voir [04](./04-logistique-merch.md).
-- Prix de vente : inconnus.
+- Prix de vente : on met des prix provisoires. Théo et Pej les changent eux-mêmes dans Shopify.
 
 ## Les concerts
 
@@ -51,14 +51,30 @@ On livre 1 à 3 propositions de concept, **dans une étape suivante**. Ce doc ne
 | Merch sur Spotify | Pej | Oui, obligatoire |
 | Domaine type shop.thed.com | Pierre / Pej | À trancher. Aucun domaine possédé aujourd'hui |
 
-## Questions ouvertes pour Théo et Pej
+## Le vendeur
 
-- Prix des posters et des t-shirts ?
-- Qui a l'accès admin à Spotify for Artists ? Quel distributeur ?
-- Entité vendeuse : THED PRODUCTION ? SIRET, TVA, adresse pour les mentions légales.
-- Qui expédie, depuis où, en combien de jours ? France seule ou Europe ?
-- Vente aussi au stand merch des concerts ?
-- Qui met à jour les dates et les produits après la mise en ligne ?
-- Liste des concerts passés, avec photos et vidéos.
-- Droits d'utilisation des photos et vidéos (photographes, réalisateurs à créditer).
-- Budget et prise en charge des coûts récurrents (Shopify, domaine, hébergement).
+- **THED PRODUCTION**, association déclarée (loi 1901).
+- SIRET 101 374 411 00011 · RNA W922022966 (inscrite le 06/02/2026) · NAF 90.01Z.
+- Siège : 48 rue Jean-Pierre Timbaud, 92400 Courbevoie.
+- Le compte Shopify et les mentions légales / CGV seront au nom de l'asso.
+
+## Réponses de Pierre (23/11)
+
+| Sujet | Réponse | Ce que ça change |
+| --- | --- | --- |
+| Prix | Prix provisoires, ils les modifient | Rien à attendre pour avancer |
+| Expédition | Théo et Pej, depuis Paris 19e, « dans la semaine » | On affiche « expédié sous 7 jours » |
+| Stand merch en concert | Oui | Shopify POS sur téléphone, même stock |
+| Mise à jour dates et produits | Eux | Un seul back-office : tout dans l'admin Shopify (produits + dates) |
+| Concerts passés | Zéro maintenance si possible | Une date passée bascule toute seule en « passé ». Photo ou vidéo en option, jamais obligatoire |
+| Droits photos | Surtout des photos de Pej | Crédit « Photo : Pej » par défaut. Lister les autres auteurs au cas par cas |
+| Budget et coûts récurrents | Entre Pierre et Claude, pas avec eux | Sorti des questions client |
+
+## Questions qui restent pour Théo et Pej
+
+À poser simplement :
+
+1. **Spotify** : qui peut se connecter à *Spotify for Artists* pour Thed ? C'est l'appli où vous voyez les stats Spotify de Thed. On aura besoin de cette personne 5 minutes pour relier la boutique à Spotify.
+2. **Livraison** : France seulement, ou aussi en Europe ?
+3. **TVA** : l'asso a-t-elle un numéro de TVA ? Si non, on vend sans TVA (à confirmer avec leur compta).
+4. **Photos** : Pej, tu es OK pour qu'on utilise tes photos sur le site, avec ton nom en crédit ? Qui a fait les autres (clip « Train », live session) ?

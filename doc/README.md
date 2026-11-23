@@ -13,7 +13,7 @@ On avance étape par étape. Chaque doc est court et se lit seul.
 ## Étapes
 
 1. **Cadrage** : ADN, besoin, options techniques, logistique. ✓
-2. **Questions à Théo et Pej** : prix, accès Spotify for Artists, expédition, photos produits (voir [02](./02-besoin-projet.md)). ← en cours
+2. **Questions à Théo et Pej** : la plupart réglées par Pierre le 23/11. Restent Spotify, zone de livraison, TVA, droits photos (voir [02](./02-besoin-projet.md)). ← en cours
 3. **Directions visuelles** (2 ou 3), indépendantes de la stack : toutes les options headless peuvent tout afficher. ← en cours
 4. **Choix d'une direction** avec Théo et Pej.
 5. **Test Spotify ↔ Shopify headless** sur une boutique de dev Shopify Partner (gratuite), en parallèle de 3-4.
