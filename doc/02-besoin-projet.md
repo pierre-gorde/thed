@@ -70,11 +70,13 @@ On livre 1 à 3 propositions de concept, **dans une étape suivante**. Ce doc ne
 | Droits photos | Surtout des photos de Pej | Crédit « Photo : Pej » par défaut. Lister les autres auteurs au cas par cas |
 | Budget et coûts récurrents | Entre Pierre et Claude, pas avec eux | Sorti des questions client |
 
-## Questions qui restent pour Théo et Pej
+## Réponses complémentaires (23/11)
 
-À poser simplement :
+- **Livraison** : Europe si c'est simple, sinon France seule. Shopify gère les deux, on démarre France et on ouvre l'Europe si les tarifs d'envoi restent clairs.
+- **TVA** : l'asso n'a pas de numéro de TVA. On vend sans TVA (mention « TVA non applicable » à valider avec leur compta).
+- **Photos** : Pej est OK pour être crédité.
 
-1. **Spotify** : qui peut se connecter à *Spotify for Artists* pour Thed ? C'est l'appli où vous voyez les stats Spotify de Thed. On aura besoin de cette personne 5 minutes pour relier la boutique à Spotify.
-2. **Livraison** : France seulement, ou aussi en Europe ?
-3. **TVA** : l'asso a-t-elle un numéro de TVA ? Si non, on vend sans TVA (à confirmer avec leur compta).
-4. **Photos** : Pej, tu es OK pour qu'on utilise tes photos sur le site, avec ton nom en crédit ? Qui a fait les autres (clip « Train », live session) ?
+## Questions qui restent
+
+- **Spotify** : qui peut se connecter à *Spotify for Artists* pour Thed ? À poser **après le choix des maquettes et de la stack**.
+- Auteurs du clip « Train » et de la live session, pour les crédits.
