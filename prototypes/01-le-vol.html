@@ -34,11 +34,11 @@
 
   /* Hero photo that dissolves into the 3D sky */
   #photo {
-    position: fixed; inset: 0; z-index: 1; pointer-events: none;
-    background: url("assets/cover-portrait.jpg") center 30% / cover no-repeat;
+    position: fixed; inset: 0; z-index: 1; pointer-events: none; background: #050814;
     transform-origin: 50% 35%;
     will-change: opacity, transform;
   }
+  #photo video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
   #photo::after {
     content: ""; position: absolute; inset: 0;
     background: linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,0) 30%, rgba(0,0,0,0) 55%, rgba(0,0,0,.65));
@@ -104,6 +104,12 @@
   }
   .btn.ghost { background: var(--glass); color: #fff; border: 1px solid var(--glass-line); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
   .btn:active { transform: scale(.97); }
+
+  .clip { position: relative; margin: 22px auto 0; width: min(100%, 420px); border-radius: 22px; overflow: hidden; aspect-ratio: 4 / 5; max-width: 100%; background: #0b1a3a; box-shadow: 0 24px 60px rgba(0,30,80,.3); }
+  .clip video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .clip figcaption { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 40px 16px 14px; background: linear-gradient(transparent, rgba(0,0,0,.6)); font: 800 18px/1 var(--cond); letter-spacing: .08em; text-transform: uppercase; }
+  .clip figcaption a { font: 600 13px/1 var(--text); letter-spacing: 0; text-transform: none; color: #fff; }
+  .spacer.short { height: 40svh; }
 
   /* Chapter 2 — merch in the clouds */
   .cards { display: grid; gap: 18px; }
@@ -185,7 +191,7 @@
 </style>
 
 <canvas id="world" aria-hidden="true"></canvas>
-<div id="photo" aria-hidden="true"></div>
+<div id="photo" aria-hidden="true"><video id="intro" muted playsinline loop autoplay preload="auto" poster="assets/live-poster.jpg"></video></div>
 
 <div class="bar">
   <a class="logo" href="#top" aria-label="Thed, retour en haut">
@@ -199,7 +205,7 @@
 
 <main id="top">
   <section class="takeoff">
-    <div class="kicker">Thed · premier EP</div>
+    <div class="kicker">Thed · nouvel EP</div>
     <h1>Première leçon de vol</h1>
     <p class="hand">Allez, t'as juste à sauter dans le vide.</p>
     <div class="hint"><i></i> Glisse pour décoller</div>
@@ -220,11 +226,17 @@
       <li class="reveal"><span class="m">3 600 m</span><span class="t">À l'abri dans mes rêves</span><span class="n">05</span></li>
       <li class="reveal"><span class="m">5 000 m</span><span class="t">Paris Eden</span><span class="n">06</span></li>
     </ol>
+    <figure class="clip reveal">
+      <video data-lazy src="assets/session.mp4" muted playsinline loop preload="none" poster="assets/session-poster.jpg"></video>
+      <figcaption><span>Live session</span><a href="https://linktr.ee/thed.nw" target="_blank" rel="noopener">Voir en entier ↗</a></figcaption>
+    </figure>
     <div class="listen reveal">
       <a class="btn" href="https://linktr.ee/thed.nw" target="_blank" rel="noopener">Écouter l'EP</a>
       <a class="btn ghost" href="https://www.deezer.com/fr/artist/198140397" target="_blank" rel="noopener">Deezer</a>
     </div>
   </section>
+
+  <div class="spacer short"></div>
 
   <section class="chapter" id="merch">
     <header class="reveal">
@@ -268,6 +280,8 @@
       </article>
     </div>
   </section>
+
+  <div class="spacer short"></div>
 
   <section class="chapter" id="dates">
     <header class="reveal">
@@ -337,7 +351,8 @@
 
   /* ---------- Sky palette along the climb ---------- */
   const stops = [
-    { p: 0.00, top: "#3f86d6", hor: "#a9d0f0" },
+    { p: 0.00, top: "#0a1636", hor: "#2d4f8f" },
+    { p: 0.12, top: "#3f86d6", hor: "#a9d0f0" },
     { p: 0.45, top: "#1f6fd1", hor: "#93c6f2" },
     { p: 0.68, top: "#16307a", hor: "#6a7fc0" },
     { p: 0.82, top: "#060b24", hor: "#1b2a5e" },
@@ -374,13 +389,14 @@
     scene.fog = new THREE.Fog(0xa9d0f0, 40, 900);
 
     // Sky dome
+    const skyMatVS = "varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }";
+    const skyMatFS = "uniform vec3 uTop,uHor,uGround; varying vec3 vP; void main(){ float h = vP.y; vec3 c = h > 0.0 ? mix(uHor, uTop, pow(smoothstep(0.0,1.0,h),0.55)) : mix(uHor, uGround, smoothstep(0.0,0.04,-h)); gl_FragColor = vec4(c,1.0); }";
     const skyU = { uTop: { value: new THREE.Color() }, uHor: { value: new THREE.Color() }, uGround: { value: new THREE.Color(0x0e0c0b) } };
     const sky = new THREE.Mesh(
       new THREE.SphereGeometry(3000, 32, 16),
       new THREE.ShaderMaterial({
         side: THREE.BackSide, depthWrite: false, fog: false, uniforms: skyU,
-        vertexShader: "varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
-        fragmentShader: "uniform vec3 uTop,uHor,uGround; varying vec3 vP; void main(){ float h = vP.y; vec3 c = h > 0.0 ? mix(uHor, uTop, pow(smoothstep(0.0,1.0,h),0.55)) : mix(uHor, uGround, smoothstep(0.0,0.04,-h)); gl_FragColor = vec4(c,1.0); }"
+        vertexShader: skyMatVS, fragmentShader: skyMatFS
       })
     );
     sky.renderOrder = -1;
@@ -448,24 +464,108 @@
       scene.add(s); clouds.push(s);
     }
 
-    // The glider (built from primitives, after the cover's model)
+    // ---------- The glider: procedural model after the cover's sailplane ----------
+    // Reflections: a small environment made from the same sky gradient
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const envFor = (topHex, horHex, groundHex, sunHex) => {
+      const s = new THREE.Scene();
+      const m = new THREE.ShaderMaterial({
+        side: THREE.BackSide, depthWrite: false,
+        uniforms: { uTop: { value: new THREE.Color(topHex) }, uHor: { value: new THREE.Color(horHex) }, uGround: { value: new THREE.Color(groundHex) } },
+        vertexShader: skyMatVS, fragmentShader: skyMatFS
+      });
+      s.add(new THREE.Mesh(new THREE.SphereGeometry(10, 32, 16), m));
+      const sunDisc = new THREE.Mesh(new THREE.SphereGeometry(1.2, 16, 8), new THREE.MeshBasicMaterial({ color: sunHex }));
+      sunDisc.position.set(-5, 6, 3); s.add(sunDisc);
+      const rt = pmrem.fromScene(s, 0.02);
+      return rt.texture;
+    };
+    const envDay = envFor(0x3f86d6, 0xcfe4f6, 0x1a1612, 0xfff4dc);
+    const envNight = envFor(0x050a22, 0x1b2a5e, 0x05060a, 0x9fb4ff);
+    scene.environment = envDay;
+
+    // NACA-like airfoil loop (x: 0..1 chord, y: thickness), TE → upper → LE → lower → TE
+    const airfoil = (() => {
+      const n = 14, t = .12, m = .03, pp = .4, up = [], lo = [];
+      for (let i = 0; i <= n; i++) {
+        const x = (1 - Math.cos(Math.PI * i / n)) / 2;
+        const yt = 5 * t * (.2969 * Math.sqrt(x) - .126 * x - .3516 * x * x + .2843 * x ** 3 - .1036 * x ** 4);
+        const yc = x < pp ? m / (pp * pp) * (2 * pp * x - x * x) : m / ((1 - pp) ** 2) * ((1 - 2 * pp) + 2 * pp * x - x * x);
+        up.push([x, yc + yt]); lo.push([x, yc - yt]);
+      }
+      return [...up.reverse(), ...lo.slice(1)];
+    })();
+    // Lifting surface: span along +x, chord along +z (leading edge forward = -z), thickness along +y
+    function surface({ span, root, tip, sweep = 0, dihedral = 0, tipLift = 0, thick = 1, s0 = 0, s1 = 1, stations = 14 }) {
+      const pos = [], idx = [], P = airfoil.length;
+      for (let i = 0; i <= stations; i++) {
+        const s = s0 + (s1 - s0) * i / stations;
+        const c = root + (tip - root) * Math.pow(s, 1.25);
+        const x = s * span, z = sweep * s - c * .25 + root * .25, y = dihedral * x + tipLift * Math.pow(Math.max(0, (s - .72) / .28), 2);
+        for (const [ax, ay] of airfoil) pos.push(x, y + ay * c * thick, z + ax * c);
+      }
+      for (let i = 0; i < stations; i++) for (let j = 0; j < P - 1; j++) {
+        const a = i * P + j, b = a + P;
+        idx.push(a, b, a + 1, b, b + 1, a + 1);
+      }
+      // caps (simple fans) at both ends
+      [0, stations].forEach((st, k) => {
+        const base = st * P; let cx = 0, cy = 0, cz = 0;
+        for (let j = 0; j < P; j++) { cx += pos[(base + j) * 3]; cy += pos[(base + j) * 3 + 1]; cz += pos[(base + j) * 3 + 2]; }
+        const ci = pos.length / 3; pos.push(cx / P, cy / P, cz / P);
+        for (let j = 0; j < P - 1; j++) k ? idx.push(base + j, base + j + 1, ci) : idx.push(base + j + 1, base + j, ci);
+      });
+      const g = new THREE.BufferGeometry();
+      g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+      return g;
+    }
+
     const glider = new THREE.Group();
-    const white = new THREE.MeshStandardMaterial({ color: 0xf6f3ea, roughness: .42, metalness: .05 });
-    const red = new THREE.MeshStandardMaterial({ color: 0xd8242a, roughness: .5 });
-    const glass = new THREE.MeshStandardMaterial({ color: 0x3fd6c6, roughness: .08, metalness: .35, transparent: true, opacity: .9 });
-    const prof = [[0, 1.55], [.08, 1.48], [.16, 1.3], [.2, 1.0], [.2, .55], [.15, 0], [.09, -.8], [.06, -1.4], [.04, -1.6], [0, -1.62]].map(([r, y]) => new THREE.Vector2(r, y));
-    const fus = new THREE.Mesh(new THREE.LatheGeometry(prof, 20), white); fus.rotation.x = -Math.PI / 2; glider.add(fus);
-    const canopy = new THREE.Mesh(new THREE.SphereGeometry(.16, 20, 14), glass); canopy.scale.set(1, .85, 2.8); canopy.position.set(0, .13, -.85); glider.add(canopy);
-    const wingGeo = new THREE.BoxGeometry(2.5, .045, .5);
-    [-1, 1].forEach(sd => {
-      const w = new THREE.Mesh(wingGeo, white); w.position.set(sd * 1.3, .12, -.35); w.rotation.z = sd * .06; glider.add(w);
-      const tip = new THREE.Mesh(new THREE.BoxGeometry(.22, .05, .42), red); tip.position.set(sd * 2.62, .2, -.35); tip.rotation.z = sd * .06; glider.add(tip);
-      const tp = new THREE.Mesh(new THREE.BoxGeometry(.62, .03, .26), white); tp.position.set(sd * .34, .06, 1.45); glider.add(tp);
-      const tpt = new THREE.Mesh(new THREE.BoxGeometry(.1, .035, .24), red); tpt.position.set(sd * .69, .06, 1.45); glider.add(tpt);
-    });
-    const fin = new THREE.Mesh(new THREE.BoxGeometry(.03, .55, .32), white); fin.position.set(0, .3, 1.48); fin.rotation.x = -.25; glider.add(fin);
-    const stripe = new THREE.Mesh(new THREE.BoxGeometry(.012, .02, 2.2), red); stripe.position.set(.2, .02, .2); glider.add(stripe);
-    const stripe2 = stripe.clone(); stripe2.position.x = -.2; glider.add(stripe2);
+    const white = new THREE.MeshStandardMaterial({ color: 0xf7f5ee, roughness: .28, metalness: 0, envMapIntensity: 1.1 });
+    const red = new THREE.MeshStandardMaterial({ color: 0xd61f27, roughness: .35, envMapIntensity: .9 });
+    const glass = new THREE.MeshStandardMaterial({ color: 0x29c9bb, roughness: .04, metalness: .2, transparent: true, opacity: .78, envMapIntensity: 2.2 });
+
+    // Fuselage: pod-and-boom lathe with a red cheat-line texture
+    const stripeTex = (() => {
+      const c = document.createElement("canvas"); c.width = 256; c.height = 8; const g = c.getContext("2d");
+      g.fillStyle = "#f7f5ee"; g.fillRect(0, 0, 256, 8);
+      g.fillStyle = "#8e1a20"; g.fillRect(62, 0, 3, 8); g.fillRect(191, 0, 3, 8);
+      g.fillStyle = "#c9c4b6"; g.fillRect(70, 0, 1, 8); g.fillRect(185, 0, 1, 8);
+      return new THREE.CanvasTexture(c);
+    })();
+    const prof = new THREE.SplineCurve([
+      [0, 1.95], [.05, 1.9], [.12, 1.78], [.18, 1.55], [.215, 1.2], [.215, .85], [.19, .45], [.13, 0], [.085, -.6], [.062, -1.3], [.05, -1.8], [.03, -2.02], [0, -2.06]
+    ].map(([r, y]) => new THREE.Vector2(r, y))).getPoints(64);
+    prof[0].x = 0; prof[prof.length - 1].x = 0;
+    const fusMat = white.clone(); fusMat.map = stripeTex;
+    const fus = new THREE.Mesh(new THREE.LatheGeometry(prof, 40), fusMat);
+    fus.rotation.x = -Math.PI / 2; glider.add(fus);
+
+    // Canopy
+    const canopy = new THREE.Mesh(new THREE.SphereGeometry(1, 32, 20), glass);
+    canopy.scale.set(.15, .14, .5); canopy.position.set(0, .13, -1.2); glider.add(canopy);
+
+    // Wings (shoulder-mounted, slight dihedral, polyhedral tips) with red tips
+    const wingP = { span: 3.0, root: .56, tip: .2, sweep: .1, dihedral: .035, tipLift: .12 };
+    const wingR = new THREE.Mesh(surface({ ...wingP, s1: .94 }), white);
+    const tipR = new THREE.Mesh(surface({ ...wingP, s0: .94, stations: 3 }), red);
+    const wings = new THREE.Group(); wings.add(wingR, tipR);
+    const wingsL = wings.clone(); wingsL.scale.x = -1;
+    [wings, wingsL].forEach(w => { w.position.set(0, .14, -.78); glider.add(w); });
+
+    // Fin, swept, with a T-tail
+    const finGeo = surface({ span: .6, root: .5, tip: .28, sweep: .26, thick: .9, stations: 6 });
+    finGeo.rotateZ(Math.PI / 2); finGeo.rotateY(0);
+    const fin = new THREE.Mesh(finGeo, white); fin.position.set(0, .02, 1.42); glider.add(fin);
+    const finStripe = new THREE.Mesh(surface({ span: .6, root: .5, tip: .28, sweep: .26, thick: .95, s0: .45, s1: .6, stations: 2 }), new THREE.MeshStandardMaterial({ color: 0x8e1a20, roughness: .4 }));
+    finStripe.geometry.rotateZ(Math.PI / 2); finStripe.position.copy(fin.position); glider.add(finStripe);
+    const stabP = { span: .72, root: .28, tip: .15, sweep: .08 };
+    const stab = new THREE.Group();
+    stab.add(new THREE.Mesh(surface({ ...stabP, s1: .86, stations: 6 }), white), new THREE.Mesh(surface({ ...stabP, s0: .86, stations: 2 }), red));
+    const stabL = stab.clone(); stabL.scale.x = -1;
+    [stab, stabL].forEach(s => { s.position.set(0, .61, 1.72); glider.add(s); });
+
+    glider.traverse(o => { if (o.isMesh) o.frustumCulled = false; });
     scene.add(glider);
 
     let w = 0, h = 0;
@@ -493,7 +593,7 @@
       scene.fog.color.copy(hor);
       // once we are up in the clouds the black ground disappears into the haze
       const high = smooth(.12, .3, p);
-      skyU.uGround.value.set(0x0e0c0b).lerp(hor, high);
+      skyU.uGround.value.copy(hor); // below the horizon the far ground melts into the haze, no hard line
       ground.visible = rocks.visible = high < 1;
       sky.position.copy(camera.position); stars.position.copy(camera.position);
       starMat.opacity = smooth(.66, .9, p);
@@ -507,12 +607,16 @@
       // glider
       const rise = smooth(.02, .14, p);
       const bob = reduce ? 0 : Math.sin(t * 1.3) * .12;
-      gx = lerp(gx, steer * 2.4 + (reduce ? 0 : Math.sin(t * .45) * .5), .05);
+      gx = lerp(gx, steer * 2 + (reduce ? 0 : Math.sin(t * .45) * .5), .05);
       bank = lerp(bank, clamp(-(steer * .6) - vel * 18, -.7, .7), .06);
-      glider.position.set(camera.position.x + gx, camera.position.y - lerp(4.5, 1.5, rise) + bob, camera.position.z - lerp(15, 13, rise));
-      glider.rotation.set(.12 + rise * .06 - look * .3 + clamp(vel * 10, -.25, .25), lerp(0, -.35, smooth(.0, .1, p)) * (1 - rise) + gx * -.06, bank);
+      glider.rotation.order = "YXZ";
+      const dist = camera.aspect < 1 ? 15 : 10, halfH = Math.tan(camera.fov * Math.PI / 360) * dist;
+      glider.position.set(camera.position.x + gx * (camera.aspect < 1 ? .5 : 1), camera.position.y - lerp(1.05, .36, rise) * halfH + bob, camera.position.z - dist);
+      const yaw = .55 + gx * -.1 + (reduce ? 0 : Math.sin(t * .31) * .07);
+      glider.rotation.set(.06 + rise * .05 - look * .25 + clamp(vel * 10, -.25, .25), yaw, bank - .14);
       flash.position.set(camera.position.x, camera.position.y + .5, camera.position.z - 2);
       flash.intensity = night * 1.6;
+      scene.environment = night > .5 ? envNight : envDay;
       renderer.render(scene, camera);
     };
   }
@@ -528,6 +632,7 @@
     // hero photo dissolves into the 3D sky
     const k = smooth(0, .09, progress);
     photo.style.opacity = String(1 - k);
+    if (k >= 1 && !intro.paused) intro.pause(); else if (k < 1 && intro.paused && intro.src) intro.play().catch(() => {});
     photo.style.transform = `scale(${1 + k * .18}) translateY(${k * 4}%)`;
     // altimeter
     altEl.textContent = progress > .93 ? "∞" : fmt(Math.round(progress * 120) * 100);
@@ -538,6 +643,16 @@
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);
+
+  /* ---------- Videos: live intro (portrait or landscape cut), clips play only when visible ---------- */
+  const intro = document.getElementById("intro");
+  intro.src = innerWidth / innerHeight < 1 ? "assets/live-portrait.mp4" : "assets/live-landscape.mp4";
+  intro.play().catch(() => {});
+  const vio = new IntersectionObserver(es => es.forEach(e => {
+    const v = e.target;
+    if (e.isIntersecting) { if (v.preload === "none") v.preload = "auto"; v.play().catch(() => {}); } else v.pause();
+  }), { threshold: .25 });
+  document.querySelectorAll("video[data-lazy]").forEach(v => vio.observe(v));
 
   /* ---------- Reveal on scroll ---------- */
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });

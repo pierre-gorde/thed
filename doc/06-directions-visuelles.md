@@ -33,7 +33,19 @@
 - **Rubriques** : la carte d'embarquement = l'EP, le tableau des départs = les dates, le duty free = le merch.
 - **Effet waouh** : moyen, très lisible. **Risque** : faible. Se recycle à chaque sortie (nouveau « vol »).
 
+## Retours de Pierre et V2 (23/11, 16h30)
+
+| Proto | Retour | V2 |
+| --- | --- | --- |
+| Le vol | Pas mal, mais l'avion fait maquette | Planeur 3D refait (vrais profils d'aile, T-tail, reflets du ciel), vu de trois quarts. Intro vidéo live (Thed face à la foule) qui se fond dans le ciel. Extrait de la live session dans l'EP |
+| Carnet de vol | Moche, trop école primaire, trop collé à la DA de l'EP | **Abandonné** |
+| Embarquement | DA bien, mais métaphore aéroport trop poussée | Métaphore retirée (plus de carte d'embarquement ni de duty free). On garde la nuit, la typo mono et le tableau à palettes pour les dates. Intro vidéo live + live session |
+
+Vidéos : extraits de `bon.mp4` (9 s, live) et `réél_1.mp4` (7 s, live session), coupés et compressés en H.264 sans son (~1 Mo chacun). Sources hors repo (`_videos/`, ignoré par git).
+
+Leçon : ne pas coller littéralement à l'EP. Le site doit tenir aux prochaines sorties.
+
 ## À trancher
 
-- Une direction, ou un mix (ex. : le décollage du 1 en intro, puis le carnet du 2).
+- Une direction, ou un mix (ex. : l'intro vidéo + le décollage du 1, puis la DA de nuit du 3).
 - À montrer à Théo et Pej une fois le choix fait de notre côté.
