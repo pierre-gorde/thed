@@ -63,6 +63,21 @@ Son de démo : la live session. En vrai : les 6 MP3 de l'EP (à demander à Thé
 - T-shirt en 3D (Three.js chargé seulement près de la boutique), on le tourne au doigt. Sans WebGL : le slider reste.
 - Poster : le vrai visuel (A1 paysage).
 
+## Retours de Pej (23/11, 17h18) et deux versions en parallèle
+
+Pej veut plus simple, « vraiment un site de merch » (réf. : boutique Shopify classique, fond blanc, bandeau photo live, grille produits). Ses points :
+- merch en premier sous la vidéo ;
+- largeur max plus grande sur ordi ;
+- live session : lien YouTube intégré dans le site ;
+- cards merch : 2 photos (survol), à plat sur fond blanc ; poster : accroché + fond blanc (photos de Pej d'ici mi-semaine) ;
+- l'avion en curseur.
+
+Décision de Pierre (23/11, 22h40) : garder les deux pour comparer.
+- **Merch simple** (`prototypes/04-merch-simple.html`) : https://claude.ai/artifact/AewBbwE5cNTVj18AQMTcAK, conforme à la demande de Pej.
+- **Embarquement V5** : on ne prend que les retours utiles. Shop en premier, vraie mise en page ordi (EP en 2 colonnes avec lecteur collant, live en 2 colonnes, titres plus grands, menu), poster à plat / au mur, l'avion suit la souris sur ordi.
+
+Vidéo d'intro : dans le navigateur Instagram (ou en mode économie d'énergie), la vidéo peut refuser de se lancer. Une photo est maintenant posée dessous, la vidéo n'apparaît qu'une fois lancée, et on retente au premier toucher.
+
 ## Dates et Shotgun
 
 - Shotgun n'a pas d'API publique ni de widget (vérifié le 23/11).

@@ -1,0 +1,376 @@
+<title>Thed · Merch</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #ffffff;
+    --fg: #111111;
+    --muted: #6d6d6a;
+    --line: #e7e6e2;
+    --tile: #f5f5f3;
+    --accent: #111111;
+    --font: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+    --max: 1440px;
+    --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+    --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+    /* the paper plane cursor (desktop) */
+    --plane: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M2 2 L30 14 L13 16 Z' fill='%23111'/%3E%3Cpath d='M13 16 L30 14 L17 29 Z' fill='%23555'/%3E%3C/g%3E%3C/svg%3E") 2 2;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 400 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  @media (hover: hover) and (pointer: fine) {
+    body, body * { cursor: var(--plane), auto; }
+    a, button, [role="button"], label { cursor: var(--plane), pointer; }
+  }
+  a { color: inherit; }
+  img { max-width: 100%; display: block; }
+  .wrap { max-width: var(--max); margin: 0 auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+  @media (min-width: 900px) { :root { --gutter-l: max(40px, env(safe-area-inset-left, 0px)); --gutter-r: max(40px, env(safe-area-inset-right, 0px)); } }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+  /* Announcement + header */
+  .announce { background: var(--fg); color: #fff; text-align: center; font: 500 12px/1 var(--font); letter-spacing: .06em; text-transform: uppercase; padding: 11px 0; padding-top: calc(11px + env(safe-area-inset-top, 0px)); }
+  .announce a { text-decoration: underline; text-underline-offset: 3px; }
+  header.top { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.94); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  header.top .wrap { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; height: 60px; }
+  .logo { display: block; width: 74px; }
+  .logo svg { width: 100%; height: auto; display: block; fill: var(--fg); }
+  nav.main { display: flex; justify-content: center; gap: 22px; }
+  nav.main a { font: 500 13px/1 var(--font); letter-spacing: .04em; text-transform: uppercase; text-decoration: none; padding: 8px 0; color: var(--muted); }
+  nav.main a:hover, nav.main a:focus-visible { color: var(--fg); }
+  .cartbtn { font: 500 13px/1 var(--font); letter-spacing: .04em; text-transform: uppercase; background: none; border: 0; padding: 10px 0; color: var(--fg); }
+  .cartbtn b { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 6px; border-radius: 10px; background: var(--fg); color: #fff; font-size: 11px; padding: 0 6px; }
+  .cartbtn.bump b { animation: bump .4s ease; }
+  @keyframes bump { 40% { transform: scale(1.25); } }
+  @media (max-width: 560px) { nav.main { gap: 14px; } nav.main a { font-size: 12px; } .logo { width: 62px; } }
+
+  /* Banner video */
+  .banner { position: relative; background: #000; aspect-ratio: 16 / 10; overflow: hidden; }
+  @media (min-width: 900px) { .banner { aspect-ratio: 21 / 8; max-height: 72vh; width: 100%; } }
+  .banner video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Hero video: a photo sits underneath; the video only fades in once it really plays (Instagram / low-power mode can refuse autoplay) */
+  .heroimg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  video.hv { opacity: 0; transition: opacity .6s ease; }
+  video.hv.ok { opacity: 1; }
+  video.hv::-webkit-media-controls, video.hv::-webkit-media-controls-start-playback-button, video.hv::-webkit-media-controls-overlay-play-button { display: none !important; -webkit-appearance: none; }
+
+
+  /* Sections */
+  section { padding-block: 40px 8px; }
+  @media (min-width: 900px) { section { padding-block: 64px 8px; } }
+  .shead { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+  h2 { margin: 0; font: 600 22px/1.1 var(--font); letter-spacing: -.01em; }
+  @media (min-width: 900px) { h2 { font-size: 28px; } }
+  .more { font: 500 13px/1 var(--font); color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+
+  /* Merch toolbar + grid */
+  .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 20px; font: 400 13px/1 var(--font); color: var(--muted); }
+  .toolbar .l, .toolbar .r { display: flex; align-items: center; gap: 18px; min-width: 0; }
+  @media (max-width: 480px) { .toolbar { font-size: 12px; } .toolbar .l, .toolbar .r { gap: 6px; } #nItems { display: none; } .toolbar select { max-width: 110px; } }
+  .toolbar select { font: inherit; color: var(--fg); background: none; border: 0; padding: 6px 2px; }
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 14px; }
+  @media (min-width: 900px) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 24px; } }
+  .card { min-width: 0; background: none; border: 0; padding: 0; text-align: left; color: inherit; font: inherit; }
+  .media { position: relative; aspect-ratio: 1 / 1; background: var(--tile); overflow: hidden; }
+  .media .shot { position: absolute; inset: 0; transition: opacity .45s ease, transform .8s cubic-bezier(.2,.8,.2,1); }
+  .media .shot + .shot { opacity: 0; }
+  @media (hover: hover) { .card:hover .media .shot + .shot { opacity: 1; } .card:hover .media .shot:first-child { transform: scale(1.03); } }
+  .card.alt .media .shot + .shot { opacity: 1; }
+  .badge { position: absolute; z-index: 2; top: 10px; left: 10px; background: #fff; color: var(--fg); font: 500 11px/1 var(--font); padding: 6px 8px; border-radius: 3px; }
+  .card h3 { margin: 12px 0 4px; font: 500 14px/1.3 var(--font); }
+  .card .price { font: 400 14px/1 var(--font); color: var(--muted); }
+  .card:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; }
+
+  /* Product shots, drawn on white until Pej's photos arrive */
+  .tee { display: grid; place-items: center; }
+  .tee svg { width: 82%; height: 82%; filter: drop-shadow(0 10px 14px rgba(0,0,0,.08)); }
+  .tee img { position: absolute; left: 50%; transform: translateX(-50%); }
+  .tee.front img { top: 34%; width: 24%; }
+  .tee.back img { top: 24%; width: 29%; }
+  .flat { display: grid; place-items: center; }
+  .flat img { width: 84%; box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 14px 24px rgba(0,0,0,.08); border: 5px solid #fff; }
+  .wall { background: linear-gradient(#e9e6df, #dcd8cf); display: grid; place-items: center; }
+  .wall .frame { position: relative; width: 74%; border: 4px solid #fff; box-shadow: 0 18px 26px rgba(0,0,0,.18); transform: translateY(-4%); }
+  .wall .frame::before, .wall .frame::after { content: ""; position: absolute; top: -10px; width: 34px; height: 16px; background: rgba(255,255,255,.75); transform: rotate(-6deg); }
+  .wall .frame::before { left: 8%; } .wall .frame::after { right: 8%; transform: rotate(5deg); }
+  .wall .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 14%; background: linear-gradient(#cfc9bd, #c4bdaf); }
+  .duo { display: grid; grid-template-columns: 1fr 1fr; align-items: center; padding: 8%; gap: 4%; }
+  .duo > div { position: relative; aspect-ratio: 1 / 1; }
+
+  /* Live session: YouTube right in the page (facade here, real embed on the site) */
+  .yt { position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; border: 0; padding: 0; overflow: hidden; }
+  .yt img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; opacity: .92; transition: opacity .3s, transform .8s cubic-bezier(.2,.8,.2,1); }
+  .yt:hover img { opacity: 1; transform: scale(1.02); }
+  .yt .play { position: absolute; left: 50%; top: 50%; width: 68px; height: 48px; transform: translate(-50%, -50%); background: #ff0033; border-radius: 12px; display: grid; place-items: center; box-shadow: 0 6px 20px rgba(0,0,0,.3); }
+  .yt .play::after { content: ""; border-left: 18px solid #fff; border-top: 11px solid transparent; border-bottom: 11px solid transparent; margin-left: 4px; }
+  .yt .cap { position: absolute; left: 14px; bottom: 12px; right: 14px; color: #fff; font: 600 14px/1.2 var(--font); text-align: left; text-shadow: 0 1px 8px rgba(0,0,0,.6); }
+  .note { font: 400 12px/1.4 var(--font); color: var(--muted); margin: 10px 0 0; }
+  @media (min-width: 900px) { .live { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 40px; align-items: center; } }
+  .live p.lead { margin: 14px 0 0; color: var(--muted); max-width: 38ch; }
+
+  /* Concerts */
+  .gigs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .gigs li { display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .gigs .d { font: 600 13px/1.2 var(--font); text-transform: uppercase; letter-spacing: .03em; }
+  .gigs .w b { display: block; font: 500 15px/1.3 var(--font); }
+  .gigs .w span { font-size: 13px; color: var(--muted); }
+  .gigs .past { color: var(--muted); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 18px; border: 1px solid var(--fg); background: var(--fg); color: #fff; font: 500 13px/1 var(--font); letter-spacing: .04em; text-transform: uppercase; text-decoration: none; border-radius: 2px; }
+  .btn.ghost { background: none; color: var(--fg); }
+  .btn[disabled] { opacity: .4; }
+
+  /* Footer */
+  footer { margin-top: 56px; border-top: 1px solid var(--line); padding-block: 36px calc(env(safe-area-inset-bottom, 0px) + 36px); }
+  footer .cols { display: grid; gap: 26px; }
+  @media (min-width: 900px) { footer .cols { grid-template-columns: 1.4fr 1fr 1fr 1fr; } }
+  footer h4 { margin: 0 0 10px; font: 600 12px/1 var(--font); letter-spacing: .06em; text-transform: uppercase; }
+  footer ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  footer ul a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  footer ul a:hover { color: var(--fg); }
+  footer .fine { margin-top: 28px; font-size: 12px; color: var(--muted); }
+
+  /* Product sheet + cart drawer */
+  .scrim { position: fixed; inset: 0; z-index: 40; background: rgba(0,0,0,.35); opacity: 0; visibility: hidden; transition: opacity .3s, visibility 0s .3s; }
+  .scrim.on { opacity: 1; visibility: visible; transition-delay: 0s; }
+  .sheet { position: fixed; z-index: 41; left: 0; right: 0; bottom: 0; max-height: 92vh; overflow: auto; background: #fff; border-radius: 14px 14px 0 0; transform: translateY(102%); visibility: hidden; transition: transform .4s cubic-bezier(.2,.8,.2,1), visibility 0s .4s; padding: 14px var(--gutter-r) calc(env(safe-area-inset-bottom, 0px) + 20px) var(--gutter-l); }
+  .sheet.on { transform: none; visibility: visible; transition-delay: 0s; }
+  @media (min-width: 900px) { .sheet { left: 50%; right: auto; bottom: auto; top: 50%; width: min(940px, 92vw); border-radius: 6px; transform: translate(-50%, -46%); opacity: 0; visibility: hidden; transition: transform .35s, opacity .35s, visibility 0s .35s; padding: 28px; }
+    .sheet.on { transform: translate(-50%, -50%); opacity: 1; visibility: visible; transition-delay: 0s; } }
+  .sheet .x, .drawer .x { position: absolute; top: 10px; right: 12px; width: 40px; height: 40px; border: 0; background: none; font: 400 26px/1 var(--font); color: var(--fg); }
+  .pv { display: grid; gap: 18px; }
+  @media (min-width: 900px) { .pv { grid-template-columns: 1.1fr 1fr; gap: 32px; align-items: start; } }
+  .gal { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+  .gal::-webkit-scrollbar { display: none; }
+  .gal .media { scroll-snap-align: start; }
+  .gal .media .shot + .shot { opacity: 1; }
+  .gdots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+  .gdots i { width: 6px; height: 6px; border-radius: 3px; background: var(--line); transition: width .25s, background .25s; }
+  .gdots i.on { width: 16px; background: var(--fg); }
+  .pv h3 { margin: 8px 0 6px; font: 600 22px/1.15 var(--font); padding-right: 40px; }
+  .pv .price { font-size: 17px; }
+  .pv .desc { color: var(--muted); margin: 12px 0 18px; }
+  .sizes { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 18px; }
+  .sizes button { min-width: 52px; min-height: 44px; border: 1px solid var(--line); background: #fff; font: 500 14px/1 var(--font); color: var(--fg); border-radius: 2px; }
+  .sizes button[aria-pressed="true"] { border-color: var(--fg); box-shadow: inset 0 0 0 1px var(--fg); }
+  .lbl { font: 500 12px/1 var(--font); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .pv .btn { width: 100%; }
+  .ship { margin: 14px 0 0; font-size: 13px; color: var(--muted); display: grid; gap: 4px; }
+  .drawer { position: fixed; z-index: 42; top: 0; right: 0; bottom: 0; width: min(420px, 100vw); background: #fff; transform: translateX(102%); visibility: hidden; transition: transform .4s cubic-bezier(.2,.8,.2,1), visibility 0s .4s; display: grid; grid-template-rows: auto 1fr auto; padding: calc(env(safe-area-inset-top, 0px) + 18px) var(--gutter-r) calc(env(safe-area-inset-bottom, 0px) + 18px) 20px; }
+  .drawer.on { transform: none; visibility: visible; transition-delay: 0s; }
+  .drawer h3 { margin: 4px 0 16px; font: 600 18px/1 var(--font); }
+  .lines { overflow: auto; display: grid; align-content: start; gap: 14px; }
+  .line { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 12px; align-items: center; }
+  .line .media { width: 64px; }
+  .line b { font: 500 14px/1.3 var(--font); display: block; }
+  .line span { font-size: 13px; color: var(--muted); }
+  .empty { color: var(--muted); }
+  .tot { border-top: 1px solid var(--line); padding-top: 14px; display: grid; gap: 12px; }
+  .tot .row { display: flex; justify-content: space-between; font-weight: 500; }
+  .toast { position: fixed; z-index: 50; left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 18px); transform: translate(-50%, 140%); visibility: hidden; background: var(--fg); color: #fff; font: 500 13px/1.3 var(--font); padding: 12px 16px; border-radius: 4px; max-width: calc(100vw - 32px); transition: transform .35s, visibility 0s .35s; }
+  .toast.on { transform: translate(-50%, 0); visibility: visible; transition-delay: 0s; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition-duration: .01s !important; animation: none !important; } }
+</style>
+
+<div class="announce"><a href="https://ffm.to/premire-leon-de-vol" target="_blank" rel="noopener">Nouvel EP « Première leçon de vol » · Écouter</a></div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Thed, accueil"><svg viewBox="0 0 354.96 107.66" aria-hidden="true"><path d="M144.19,11.76c4.35,5.07,5.83,12.76,2.59,18.77-.69,1.84-1.38,3.69-2.06,5.53,20.97-6.01,40.89.91,42.66,24.86.05,7.57-.72,18.81-3.6,28.16-3.18,10.36-12.88,17.61-23.7,16.95-13.9-.84-21.27-18.96-17.67-37.51.34,13.08-6.67,26.11-17.77,33.03-3.32,2.07-7.11,3.65-11.03,3.57-5.27-.11-10.14-3.29-13.31-7.5-3.17-4.22-4.83-9.37-5.9-14.54-4.57-22.06,1.23-46.05,15.38-63.58,6.57-8.14,16.66-15.37,26.77-12.68,3.03.81,5.64,2.58,7.64,4.91Z"/><path d="M354.38,64.99c-1.99-9.95-3.47-22.32-2.74-32.44.4-1.92.79-3.85,1.19-5.78,2.27-6.44-.38-13.81-5.46-18.15-2.33-1.99-5.18-3.35-8.3-3.68-10.4-1.09-19.26,7.61-24.49,16.66-2.29,3.96-4.2,8.14-5.72,12.45-2.19-2.76-5.08-3.87-8.33-3.66-.06,0-.13,0-.19.01-.03,0-.06.01-.09.01-.27.03-.54.06-.81.1-.05,0-.09.01-.14.02-19.32,2.62-30.89,22.3-32.3,40.47-.39,4.98.02,10.11,1.47,14.9.03.1.06.19.11.27.92,3.84,2.52,7.57,4.92,11.07,3.76,5.47,10.07,8.47,16.35,8.87,7.48.49,17.49-4.26,22.98-11.57,1.24,2.08,2.7,4.02,4.44,5.7,3.78,3.68,9.08,6.06,14.31,5.36,3.88-.52,7.38-2.67,10.34-5.23,9.9-8.56,14.81-22.51,12.46-35.38ZM294.33,77.16c-.64,1.06-.85,1.2-1.81,1.06-.91-.15-1.53-1.33-1.42-3.11.05-.86.49-2.34.49-2.34,0,0,.88-2.05,1.73-2.33.85-.3,1.56-.15,1.83,1.16.27,1.3-.2,4.53-.82,5.56Z"/><path d="M96.33,17.16c-5.59-6.01-17.54-9.02-28.49-9.25-1.26-1.86-2.82-3.5-4.58-4.79C60.69,1.22,57.68.06,54.53,0c-6.72-.12-12.33,3.96-16.57,9.56C25.28,10.87,7.53,19,1.92,29.2c-6.61,12.19,5.38,19.89,12.74,21.03,3.8.77,7.62.91,11.43.61-.1,13.27,2.78,26.67,8.59,38.64,2.44,5.05,5.46,9.95,9.68,13.49,4.21,3.53,9.79,5.56,14.91,4.32,3.81-.92,7.04-3.52,9.68-6.51,8.84-10,12.04-25.23,8.13-38.64-1.68-5.47-3.31-11.67-4.54-17.89,5.21-.64,10.32-1.92,15.18-4.27,6.61-2.86,17.4-12.99,8.61-22.82ZM51.06,44.46h-.09l.18-.02.21-.04s-.07.02-.1.03c-.03.02-.07.03-.1.04-.03,0-.07,0-.1-.01Z"/><path d="M260.6,79.38s-.06-.06-.09-.09c-.05-.04-.11-.09-.17-.13-.76-.63-1.7-1-2.84-1.07-1.35-.08-2.97.29-4.86,1.24-1.15.57-2.21,1.31-3.18,2.15-1.56,1.35-3.38,1.95-4.98,2.01-2.78.12-4.86-1.4-3.59-3.5.52-.85,1.39-1.41,2.33-1.7,12.63-3.83,23.77-14.48,23.89-27.74-.25-15-13.85-20.28-27.79-20.35-7.77-.06-15.64,1.51-21.37,3.9-13.67,4.73-24.42,19.11-26.34,33.76-1.86,14.22,3.45,28.87,18,35.93,2.65,1.17,5.46,2.03,8.35,2.6,9.57.47,30.07.13,40.7-10.28,3.05-3.91,4.15-7.69,4.03-10.82.01-.06.01-.11,0-.17-.11-2.36-.91-4.34-2.08-5.73h-.01ZM232.17,50.84c-.43-.82.16-2.03,1.65-2.99.26-.17.6-.34.95-.5.88-.4,1.83-.67,2.8-.72.2,0,.39-.01.58,0h.02c.3.03.56.1.74.22.73.52,1.04,1.18.15,2.17-.89,1-3.77,2.53-4.97,2.64-.08.01-.16.01-.24.02-.99.02-1.3-.15-1.67-.85Z"/></svg></a>
+    <nav class="main" aria-label="Menu">
+      <a href="#merch">Merch</a><a href="#live">Live</a><a href="#concerts">Concerts</a>
+    </nav>
+    <button class="cartbtn" id="cartBtn" type="button" aria-label="Ouvrir le panier">Panier<b id="count">0</b></button>
+  </div>
+</header>
+
+<main id="top">
+  <div class="banner">
+    <img class="heroimg" src="assets/live-poster-land.jpg" alt="Thed sur scène, face au public">
+    <video id="intro" class="hv" muted playsinline webkit-playsinline loop autoplay preload="auto" aria-hidden="true"></video>
+  </div>
+
+  <section id="merch">
+    <div class="wrap">
+      <div class="shead"><h2>Merch</h2></div>
+      <div class="toolbar">
+        <div class="l">
+          <label><span class="sr">Disponibilité</span><select id="fAvail"><option value="all">Disponibilité</option><option value="in">En stock</option></select></label>
+          <label><span class="sr">Prix</span><select id="fPrice"><option value="all">Prix</option><option value="30">Moins de 30 €</option></select></label>
+        </div>
+        <div class="r"><span id="nItems">3 articles</span>
+          <label><span class="sr">Trier</span><select id="sort"><option value="feat">Trier</option><option value="asc">Prix croissant</option><option value="desc">Prix décroissant</option></select></label>
+        </div>
+      </div>
+      <div class="grid" id="grid"></div>
+      <p class="note">Visuels provisoires : les photos produit (à plat sur fond blanc + porté / accroché) arrivent. Prix fictifs.</p>
+    </div>
+  </section>
+
+  <section id="live">
+    <div class="wrap">
+      <div class="shead"><h2>Live session</h2><a class="more" href="https://youtube.com/@theeeed" target="_blank" rel="noopener">Chaîne YouTube</a></div>
+      <div class="live">
+        <div>
+          <a class="yt" href="https://youtube.com/@theeeed" target="_blank" rel="noopener" aria-label="Lire la live session sur YouTube">
+            <img src="assets/session-poster.jpg" alt="">
+            <span class="play" aria-hidden="true"></span>
+            <span class="cap">Thed · Live session</span>
+          </a>
+          <p class="note">Sur le vrai site, la vidéo YouTube se lit directement ici, sans quitter la page.</p>
+        </div>
+        <div><p class="lead">Les titres de « Première leçon de vol » en live, sur un toit de Paris.</p>
+          <p style="margin-top:18px"><a class="btn ghost" href="https://ffm.to/premire-leon-de-vol" target="_blank" rel="noopener">Écouter l'EP</a></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="concerts">
+    <div class="wrap">
+      <div class="shead"><h2>Concerts</h2><a class="more" href="https://shotgun.live/fr/events/thed" target="_blank" rel="noopener">Tout sur Shotgun</a></div>
+      <ul class="gigs">
+        <li><span class="d">14 fév.<br>2027</span><span class="w"><b>Paris</b><span>Salle à confirmer</span></span><a class="btn" href="https://shotgun.live/fr/events/thed" target="_blank" rel="noopener">Billets</a></li>
+        <li><span class="d">07 mars<br>2027</span><span class="w"><b>Lyon</b><span>Salle à confirmer</span></span><a class="btn" href="https://shotgun.live/fr/events/thed" target="_blank" rel="noopener">Billets</a></li>
+        <li class="past"><span class="d">19 nov.<br>2026</span><span class="w"><b>Paris · La Java</b><span>Release party de l'EP</span></span><span class="btn ghost" aria-disabled="true">Passé</span></li>
+      </ul>
+      <p class="note">Dates de démo. Sur le vrai site, elles se mettent à jour toutes seules.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="cols">
+      <div><a class="logo" href="#top" aria-label="Thed"><svg viewBox="0 0 354.96 107.66" aria-hidden="true"><path d="M144.19,11.76c4.35,5.07,5.83,12.76,2.59,18.77-.69,1.84-1.38,3.69-2.06,5.53,20.97-6.01,40.89.91,42.66,24.86.05,7.57-.72,18.81-3.6,28.16-3.18,10.36-12.88,17.61-23.7,16.95-13.9-.84-21.27-18.96-17.67-37.51.34,13.08-6.67,26.11-17.77,33.03-3.32,2.07-7.11,3.65-11.03,3.57-5.27-.11-10.14-3.29-13.31-7.5-3.17-4.22-4.83-9.37-5.9-14.54-4.57-22.06,1.23-46.05,15.38-63.58,6.57-8.14,16.66-15.37,26.77-12.68,3.03.81,5.64,2.58,7.64,4.91Z"/><path d="M354.38,64.99c-1.99-9.95-3.47-22.32-2.74-32.44.4-1.92.79-3.85,1.19-5.78,2.27-6.44-.38-13.81-5.46-18.15-2.33-1.99-5.18-3.35-8.3-3.68-10.4-1.09-19.26,7.61-24.49,16.66-2.29,3.96-4.2,8.14-5.72,12.45-2.19-2.76-5.08-3.87-8.33-3.66-.06,0-.13,0-.19.01-.03,0-.06.01-.09.01-.27.03-.54.06-.81.1-.05,0-.09.01-.14.02-19.32,2.62-30.89,22.3-32.3,40.47-.39,4.98.02,10.11,1.47,14.9.03.1.06.19.11.27.92,3.84,2.52,7.57,4.92,11.07,3.76,5.47,10.07,8.47,16.35,8.87,7.48.49,17.49-4.26,22.98-11.57,1.24,2.08,2.7,4.02,4.44,5.7,3.78,3.68,9.08,6.06,14.31,5.36,3.88-.52,7.38-2.67,10.34-5.23,9.9-8.56,14.81-22.51,12.46-35.38ZM294.33,77.16c-.64,1.06-.85,1.2-1.81,1.06-.91-.15-1.53-1.33-1.42-3.11.05-.86.49-2.34.49-2.34,0,0,.88-2.05,1.73-2.33.85-.3,1.56-.15,1.83,1.16.27,1.3-.2,4.53-.82,5.56Z"/><path d="M96.33,17.16c-5.59-6.01-17.54-9.02-28.49-9.25-1.26-1.86-2.82-3.5-4.58-4.79C60.69,1.22,57.68.06,54.53,0c-6.72-.12-12.33,3.96-16.57,9.56C25.28,10.87,7.53,19,1.92,29.2c-6.61,12.19,5.38,19.89,12.74,21.03,3.8.77,7.62.91,11.43.61-.1,13.27,2.78,26.67,8.59,38.64,2.44,5.05,5.46,9.95,9.68,13.49,4.21,3.53,9.79,5.56,14.91,4.32,3.81-.92,7.04-3.52,9.68-6.51,8.84-10,12.04-25.23,8.13-38.64-1.68-5.47-3.31-11.67-4.54-17.89,5.21-.64,10.32-1.92,15.18-4.27,6.61-2.86,17.4-12.99,8.61-22.82ZM51.06,44.46h-.09l.18-.02.21-.04s-.07.02-.1.03c-.03.02-.07.03-.1.04-.03,0-.07,0-.1-.01Z"/><path d="M260.6,79.38s-.06-.06-.09-.09c-.05-.04-.11-.09-.17-.13-.76-.63-1.7-1-2.84-1.07-1.35-.08-2.97.29-4.86,1.24-1.15.57-2.21,1.31-3.18,2.15-1.56,1.35-3.38,1.95-4.98,2.01-2.78.12-4.86-1.4-3.59-3.5.52-.85,1.39-1.41,2.33-1.7,12.63-3.83,23.77-14.48,23.89-27.74-.25-15-13.85-20.28-27.79-20.35-7.77-.06-15.64,1.51-21.37,3.9-13.67,4.73-24.42,19.11-26.34,33.76-1.86,14.22,3.45,28.87,18,35.93,2.65,1.17,5.46,2.03,8.35,2.6,9.57.47,30.07.13,40.7-10.28,3.05-3.91,4.15-7.69,4.03-10.82.01-.06.01-.11,0-.17-.11-2.36-.91-4.34-2.08-5.73h-.01ZM232.17,50.84c-.43-.82.16-2.03,1.65-2.99.26-.17.6-.34.95-.5.88-.4,1.83-.67,2.8-.72.2,0,.39-.01.58,0h.02c.3.03.56.1.74.22.73.52,1.04,1.18.15,2.17-.89,1-3.77,2.53-4.97,2.64-.08.01-.16.01-.24.02-.99.02-1.3-.15-1.67-.85Z"/></svg></a></div>
+      <div><h4>Suivre</h4><ul><li><a href="https://www.instagram.com/thed.nw/" target="_blank" rel="noopener">Instagram</a></li><li><a href="https://www.tiktok.com/@thed.nw" target="_blank" rel="noopener">TikTok</a></li><li><a href="https://youtube.com/@theeeed" target="_blank" rel="noopener">YouTube</a></li></ul></div>
+      <div><h4>Écouter</h4><ul><li><a href="https://open.spotify.com/artist/3gFZrEpUIUphZLOUPOBD85" target="_blank" rel="noopener">Spotify</a></li><li><a href="https://music.apple.com/fr/artist/thed/1663638634" target="_blank" rel="noopener">Apple Music</a></li><li><a href="https://www.deezer.com/fr/artist/198140397" target="_blank" rel="noopener">Deezer</a></li></ul></div>
+      <div><h4>Infos</h4><ul><li><a href="#merch">Livraison sous 7 jours</a></li><li><a href="#merch">Retours</a></li><li><a href="#merch">Mentions légales</a></li></ul></div>
+    </div>
+    <p class="fine">© 2026 THED PRODUCTION · Prototype « Merch simple ».</p>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="pvName">
+  <button class="x" type="button" data-close aria-label="Fermer">×</button>
+  <div class="pv">
+    <div><div class="gal" id="gal"></div><div class="gdots" id="gdots"></div></div>
+    <div>
+      <span class="lbl">Thed</span>
+      <h3 id="pvName"></h3>
+      <div class="price" id="pvPrice"></div>
+      <p class="desc" id="pvDesc"></p>
+      <div id="pvSizes"><span class="lbl">Taille</span><div class="sizes" id="sizes"></div></div>
+      <button class="btn" id="pvAdd" type="button">Ajouter au panier</button>
+      <div class="ship"><span>Expédié sous 7 jours depuis Paris.</span><span>Aussi en vente au stand merch des concerts.</span></div>
+    </div>
+  </div>
+</div>
+<aside class="drawer" id="drawer" aria-label="Panier">
+  <div><h3>Panier</h3><button class="x" type="button" data-close aria-label="Fermer">×</button></div>
+  <div class="lines" id="lines"></div>
+  <div class="tot"><div class="row"><span>Sous-total</span><span id="sub">0 €</span></div><button class="btn" type="button" id="pay">Paiement</button></div>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const TEE_F = "M140 40 L100 52 L30 98 L62 170 L100 150 L100 372 L300 372 L300 150 L338 170 L370 98 L300 52 L260 40 C250 70 225 84 200 84 C175 84 150 70 140 40Z";
+  const TEE_B = "M140 40 L100 52 L30 98 L62 170 L100 150 L100 372 L300 372 L300 150 L338 170 L370 98 L300 52 L260 40 C250 52 225 58 200 58 C175 58 150 52 140 40Z";
+  const tee = side => `<div class="shot tee ${side}"><svg viewBox="0 0 400 400" aria-hidden="true"><path d="${TEE_B}" fill="#e4e1d9"/><path d="${side === "front" ? TEE_F : TEE_B}" fill="#fbfaf6" stroke="#e2dfd6" stroke-width="2"/></svg><img src="assets/${side === "front" ? "tee-devant" : "tee-dos"}.png" alt=""></div>`;
+  const posterFlat = () => `<div class="shot flat"><img src="assets/poster.jpg" alt=""></div>`;
+  const posterWall = () => `<div class="shot wall"><div class="floor"></div><div class="frame"><img src="assets/poster.jpg" alt=""></div></div>`;
+  const pack = () => `<div class="shot duo"><div>${tee("front")}</div><div>${posterFlat()}</div></div>`;
+
+  const P = [
+    { id: "tee", name: "T-shirt Première leçon de vol", price: 30, badge: "Nouveau", sizes: ["S", "M", "L", "XL"],
+      desc: "T-shirt blanc. Avion en papier et « PLDV » devant, l'oiseau et la tracklist dans le dos.", shots: [tee("front"), tee("back")] },
+    { id: "poster", name: "Poster A1 · Première leçon de vol", price: 20, badge: "Tirage limité", sizes: null,
+      desc: "Grand format A1 (84 × 59 cm), la photo de l'EP. Livré roulé, en tube.", shots: [posterFlat(), posterWall()] },
+    { id: "pack", name: "Pack T-shirt + poster", price: 45, badge: "−5 €", sizes: ["S", "M", "L", "XL"],
+      desc: "Le t-shirt et le poster ensemble.", shots: [pack(), tee("back")] }
+  ];
+  const fmt = n => n.toFixed(0) + " €";
+
+  /* Grid */
+  const grid = document.getElementById("grid");
+  const render = list => {
+    grid.innerHTML = list.map(p => `<button class="card" type="button" data-id="${p.id}" aria-label="${p.name}, ${fmt(p.price)}">
+      <div class="media">${p.badge ? `<span class="badge">${p.badge}</span>` : ""}${p.shots[0]}${p.shots[1]}</div>
+      <h3>${p.name}</h3><div class="price">${fmt(p.price)}</div></button>`).join("");
+    document.getElementById("nItems").textContent = list.length + (list.length > 1 ? " articles" : " article");
+  };
+  const apply = () => {
+    let l = P.slice();
+    if (document.getElementById("fPrice").value === "30") l = l.filter(p => p.price <= 30);
+    const s = document.getElementById("sort").value;
+    if (s === "asc") l.sort((a, b) => a.price - b.price); if (s === "desc") l.sort((a, b) => b.price - a.price);
+    render(l);
+  };
+  ["fAvail", "fPrice", "sort"].forEach(id => document.getElementById(id).addEventListener("change", apply));
+  apply();
+
+  /* Product sheet */
+  const scrim = document.getElementById("scrim"), sheet = document.getElementById("sheet"), drawer = document.getElementById("drawer");
+  const gal = document.getElementById("gal"), gdots = document.getElementById("gdots"), sizes = document.getElementById("sizes");
+  let cur = null, size = null, lastFocus = null;
+  const open = el => { lastFocus = document.activeElement; scrim.classList.add("on"); el.classList.add("on"); document.body.style.overflow = "hidden"; setTimeout(() => el.querySelector(".x").focus(), 50); };
+  const close = () => { [scrim, sheet, drawer].forEach(e => e.classList.remove("on")); document.body.style.overflow = ""; lastFocus && lastFocus.focus && lastFocus.focus(); };
+  grid.addEventListener("click", e => {
+    const c = e.target.closest(".card"); if (!c) return;
+    cur = P.find(p => p.id === c.dataset.id); size = cur.sizes ? "M" : null;
+    gal.innerHTML = cur.shots.map(s => `<div class="media">${s}</div>`).join(""); gal.scrollLeft = 0;
+    gdots.innerHTML = cur.shots.map((_, i) => `<i class="${i ? "" : "on"}"></i>`).join("");
+    document.getElementById("pvName").textContent = cur.name;
+    document.getElementById("pvPrice").textContent = fmt(cur.price);
+    document.getElementById("pvDesc").textContent = cur.desc;
+    document.getElementById("pvSizes").hidden = !cur.sizes;
+    sizes.innerHTML = (cur.sizes || []).map(s => `<button type="button" aria-pressed="${s === size}">${s}</button>`).join("");
+    open(sheet);
+  });
+  gal.addEventListener("scroll", () => { const i = Math.round(gal.scrollLeft / gal.clientWidth); [...gdots.children].forEach((d, k) => d.classList.toggle("on", k === i)); }, { passive: true });
+  gal.addEventListener("click", () => gal.scrollTo({ left: gal.scrollLeft + gal.clientWidth >= gal.scrollWidth - 2 ? 0 : gal.scrollLeft + gal.clientWidth, behavior: "smooth" }));
+  sizes.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; size = b.textContent; [...sizes.children].forEach(x => x.setAttribute("aria-pressed", String(x === b))); });
+  document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", close));
+  scrim.addEventListener("click", close);
+  addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+
+  /* Cart */
+  const cart = [], countEl = document.getElementById("count"), cartBtn = document.getElementById("cartBtn"), lines = document.getElementById("lines");
+  const toastEl = document.getElementById("toast"); let tt;
+  const toast = m => { toastEl.textContent = m; toastEl.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => toastEl.classList.remove("on"), 2400); };
+  const drawCart = () => {
+    const n = cart.reduce((a, l) => a + l.q, 0);
+    countEl.textContent = n;
+    lines.innerHTML = cart.length ? cart.map(l => `<div class="line"><div class="media">${l.p.shots[0]}</div><div><b>${l.p.name}</b><span>${l.size ? "Taille " + l.size + " · " : ""}× ${l.q}</span></div><span>${fmt(l.p.price * l.q)}</span></div>`).join("") : `<p class="empty">Ton panier est vide.</p>`;
+    document.getElementById("sub").textContent = fmt(cart.reduce((a, l) => a + l.p.price * l.q, 0));
+  };
+  document.getElementById("pvAdd").addEventListener("click", () => {
+    const ex = cart.find(l => l.p.id === cur.id && l.size === size);
+    ex ? ex.q++ : cart.push({ p: cur, size, q: 1 });
+    drawCart(); close();
+    cartBtn.classList.remove("bump"); void cartBtn.offsetWidth; cartBtn.classList.add("bump");
+    toast(`${cur.name}${size ? " (" + size + ")" : ""} ajouté au panier`);
+  });
+  cartBtn.addEventListener("click", () => { drawCart(); open(drawer); });
+  document.getElementById("pay").addEventListener("click", () => toast("En vrai : paiement Shopify (carte, Apple Pay, PayPal)."));
+  drawCart();
+
+  /* Banner video: landscape cut on wide screens, portrait-friendly crop otherwise */
+  const v = document.getElementById("intro");
+  function startHero(v, src) {
+    v.muted = true; v.defaultMuted = true; v.setAttribute("muted", ""); v.setAttribute("playsinline", ""); v.setAttribute("webkit-playsinline", "");
+    v.addEventListener("playing", () => v.classList.add("ok"));
+    const go = () => { const p = v.play(); if (p && p.catch) p.catch(() => {}); };
+    v.src = src; v.load(); go();
+    v.addEventListener("loadeddata", go, { once: true });
+    // In-app browsers sometimes wait for a first touch: retry then
+    const kick = () => { if (v.paused) go(); };
+    ["touchstart", "pointerdown", "scroll"].forEach(ev => addEventListener(ev, kick, { once: true, passive: true }));
+  }
+  startHero(v, "assets/live-landscape.mp4");
+  new IntersectionObserver(([e]) => e.isIntersecting ? v.play().catch(() => {}) : v.pause()).observe(v);
+})();
+</script>
