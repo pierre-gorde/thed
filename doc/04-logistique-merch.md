@@ -1,6 +1,6 @@
 # 04 — Logistique du merch
 
-> Relevé le 23/11/2026. Le stock est déjà chez Théo et Pej. Personne n'a encore pensé l'envoi : on le conçoit pour eux et on l'intègre au site.
+> Relevé le 23/11/2026, mis à jour avec les réponses de Pierre. Le stock est déjà chez Théo et Pej. Personne n'a encore pensé l'envoi : on le conçoit pour eux et on l'intègre au site.
 
 ## Reco
 
@@ -24,16 +24,19 @@ Shopify gère tout : commande, stock, étiquette, suivi, e-mail au client. Théo
 
 Prix par colis non trouvés sur les pages lues. Ordre de grandeur à vérifier : 4 à 5 € en point relais pour un t-shirt (~250 g), un peu plus à domicile.
 
-## Points à décider avec eux
+## Ce qui est décidé (23/11)
 
-- **Qui expédie** et à quelle fréquence (tous les jours, deux fois par semaine) ? Le délai annoncé en dépend.
+- **Qui expédie** : Théo et Pej, depuis leur appart (Paris 19e). Délai annoncé : **expédié sous 7 jours**.
+- **Vente au stand merch** : oui. L'app Shopify POS sur téléphone utilise le même stock. Frais : 0,7 % + 0,10 € en carte bancaire en personne ([tarifs Shopify](https://www.shopify.com/fr/tarifs)). Il faut un lecteur de carte Shopify (prix non relevé).
+- **Retrait en main propre** à Paris 19e ou au concert : option gratuite dans Shopify, à activer.
+
+## Points encore ouverts
+
+- **Zone** : France seule au départ, Europe ensuite ? (question posée)
 - **Emballage** :
   - t-shirt : enveloppe ou pochette souple ;
   - poster : **tube carton** obligatoire, à acheter en avance (format du poster inconnu).
-- **Frais de port** : payés par le fan, offerts au-delà d'un montant, ou forfait unique ?
-- **Zone** : France seule au départ, Europe ensuite ?
-- **Retrait en main propre** au concert ou à Paris : option gratuite dans Shopify.
-- **Vente au stand merch** : l'app Shopify POS sur téléphone utilise le même stock. Frais : 0,7 % + 0,10 € en carte bancaire en personne ([tarifs Shopify](https://www.shopify.com/fr/tarifs)). Il faut un lecteur de carte Shopify (prix non relevé).
+- **Frais de port** : payés par le fan, offerts au-delà d'un montant, ou forfait unique ? (Pierre tranche)
 - **Retours** : droit de rétractation 14 jours à prévoir dans les CGV.
 
 ## Alternative si personne ne veut emballer
