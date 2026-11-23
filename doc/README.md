@@ -12,7 +12,9 @@ On avance étape par étape. Chaque doc est court et se lit seul.
 
 ## Étapes
 
-1. **Cadrage** : ADN, besoin, options techniques, logistique. ← on est ici
-2. Choix de l'option technique et test Spotify sur une boutique d'essai.
-3. Propositions de concept (1 à 3).
-4. Développement.
+1. **Cadrage** : ADN, besoin, options techniques, logistique. ✓
+2. **Questions à Théo et Pej** : prix, accès Spotify for Artists, expédition, photos produits (voir [02](./02-besoin-projet.md)). ← en cours
+3. **Directions visuelles** (2 ou 3), indépendantes de la stack : toutes les options headless peuvent tout afficher. ← en cours
+4. **Choix d'une direction** avec Théo et Pej.
+5. **Test Spotify ↔ Shopify headless** sur une boutique de dev Shopify Partner (gratuite), en parallèle de 3-4.
+6. **Choix de la stack**, puis développement. Le plan Shopify payant ne démarre qu'à la mise en ligne.
