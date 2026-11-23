@@ -35,7 +35,7 @@ Prix par colis non trouvés sur les pages lues. Ordre de grandeur à vérifier :
 - **Zone** : Europe si c'est simple, sinon France seule. On démarre France, on ouvre l'Europe si les tarifs d'envoi restent clairs.
 - **Emballage** :
   - t-shirt : enveloppe ou pochette souple ;
-  - poster : **tube carton** obligatoire, à acheter en avance (format du poster inconnu).
+  - poster : **tube carton** obligatoire, à acheter en avance (poster **A1 paysage, 84 × 59 cm** : tube Ø 6-8 cm, longueur ≥ 63 cm).
 - **Frais de port** : payés par le fan, offerts au-delà d'un montant, ou forfait unique ? (Pierre tranche)
 - **Retours** : droit de rétractation 14 jours à prévoir dans les CGV.
 

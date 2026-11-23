@@ -23,7 +23,10 @@
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--night); color: var(--ink); font: 400 16px/1.5 var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--night); }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--sky-top, var(--night)); }
+  /* Sky behind the page: night at the top, dawn at the bottom */
+  #sky { position: fixed; inset: 0; z-index: -1; pointer-events: none; background: var(--night); }
+  #sky canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   a { color: inherit; }
 
   .bar {
@@ -33,9 +36,14 @@
     transition: background .3s ease, border-color .3s ease;
     border-bottom: 1px solid transparent;
   }
-  .bar.solid { background: rgba(6,10,20,.78); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom-color: var(--line); }
+  .bar.solid { background: var(--sky-bar, rgba(6,10,20,.78)); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom-color: var(--line); }
   .logo { width: 70px; display: block; }
   .logo svg { width: 100%; height: auto; fill: var(--ink); display: block; }
+  .bar .right { display: flex; align-items: center; gap: 8px; }
+  .snd { display: inline-flex; align-items: center; gap: 7px; font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; padding: 9px 11px; border: 1px solid rgba(255,255,255,.3); border-radius: 999px; background: rgba(6,10,20,.35); color: var(--ink); cursor: pointer; }
+  .snd .eq { opacity: 1; height: 11px; color: var(--ink-soft); }
+  .snd.on .eq { color: var(--canopy); }
+  .snd .eq i { width: 2px; }
   .bag { font: 600 13px/1 var(--mono); letter-spacing: .04em; padding: 9px 12px; border: 1px solid rgba(255,255,255,.3); border-radius: 999px; background: rgba(6,10,20,.35); color: var(--ink); cursor: pointer; white-space: nowrap; }
   .bag.bump { animation: bump .45s ease; }
   @keyframes bump { 40% { transform: scale(1.12); } }
@@ -123,11 +131,19 @@
   .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(6,10,20,.45); color: var(--ink); font: 400 26px/1 var(--text); display: grid; place-items: center; cursor: pointer; transition: opacity .2s ease; }
   .nav.prev { left: 8px; } .nav.next { right: 8px; }
   .nav[disabled] { opacity: 0; pointer-events: none; }
+  .pic canvas.tee3d { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; cursor: grab; opacity: 0; transition: opacity .5s ease; }
+  .pic.is3d canvas.tee3d { opacity: 1; }
+  .pic.is3d .track, .pic.is3d .nav, .pic.is3d .dots { visibility: hidden; }
+  .spin-hint { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); display: none; align-items: center; gap: 8px; font: 600 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); background: rgba(6,10,20,.5); padding: 7px 10px; border-radius: 999px; pointer-events: none; transition: opacity .4s; white-space: nowrap; }
+  .pic.is3d .spin-hint { display: inline-flex; }
+  .spin-hint.gone { opacity: 0; }
   .dots { position: absolute; left: 0; right: 0; bottom: 10px; display: flex; justify-content: center; gap: 6px; }
   .dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.35); transition: background .3s ease, width .3s ease; }
   .dots i.on { background: var(--ink); width: 16px; border-radius: 3px; }
   .pic .poster { position: absolute; inset: 12% 16%; background: #fff; padding: 8px; box-shadow: 0 18px 30px rgba(0,0,0,.5); transform: rotate(-2deg); }
   .pic .poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .pic .poster.land { inset: auto 7%; top: 50%; aspect-ratio: 1600 / 1133; padding: 6px; transform: translateY(-50%) rotate(-1.5deg); }
+  .pic .poster picture { display: block; width: 100%; height: 100%; }
   .tag { position: absolute; top: 10px; left: 10px; font: 600 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; background: var(--flap-ink); color: #111; padding: 6px 8px; border-radius: 6px; }
   .prow { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: 12px; }
   .pn { font: 800 24px/1 var(--cond); text-transform: uppercase; margin: 0; }
@@ -173,6 +189,14 @@
   .seek input::-moz-range-track { height: 3px; border-radius: 2px; background: linear-gradient(to right, var(--canopy) var(--p), rgba(255,255,255,.18) var(--p)); }
   .seek input::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
   .seek input::-moz-range-thumb { width: 13px; height: 13px; border-radius: 50%; background: var(--ink); border: 0; }
+  .lyrics { position: relative; height: 138px; margin-top: 14px; overflow: hidden; -webkit-mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent); mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent); }
+  .lyrics ol { list-style: none; margin: 0; padding: 0; transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+  .lyrics li { height: 46px; display: flex; align-items: center; justify-content: center; text-align: center; font-family: var(--cond); font-weight: 700; font-size: 18px; line-height: 1.02; text-wrap: balance; text-transform: uppercase; color: rgba(244,242,236,.28); transition: color .4s, transform .4s; transform: scale(.94); }
+  .lyrics li.cur { transform: none; }
+  .lyrics li span { transition: color .25s; }
+  .lyrics li.cur span { color: rgba(244,242,236,.45); }
+  .lyrics li.cur span.sung { color: var(--ink); text-shadow: 0 0 18px rgba(63,214,198,.45); }
+  .lyrics li.past { color: rgba(244,242,236,.4); }
   .demo { margin: 10px 0 0; font: 500 11px/1.45 var(--mono); color: var(--ink-soft); }
   .release img { transition: transform .12s linear; will-change: transform; }
   .mini { position: fixed; z-index: 7; left: calc(var(--gutter-l) - 4px); right: calc(var(--gutter-r) - 4px); bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
@@ -211,9 +235,13 @@
   }
 </style>
 
+<div id="sky" aria-hidden="true"><canvas id="stars"></canvas></div>
 <div class="bar" id="bar">
   <a class="logo" href="#top" aria-label="Thed"><svg viewBox="0 0 354.96 107.66" aria-hidden="true"><path d="M144.19,11.76c4.35,5.07,5.83,12.76,2.59,18.77-.69,1.84-1.38,3.69-2.06,5.53,20.97-6.01,40.89.91,42.66,24.86.05,7.57-.72,18.81-3.6,28.16-3.18,10.36-12.88,17.61-23.7,16.95-13.9-.84-21.27-18.96-17.67-37.51.34,13.08-6.67,26.11-17.77,33.03-3.32,2.07-7.11,3.65-11.03,3.57-5.27-.11-10.14-3.29-13.31-7.5-3.17-4.22-4.83-9.37-5.9-14.54-4.57-22.06,1.23-46.05,15.38-63.58,6.57-8.14,16.66-15.37,26.77-12.68,3.03.81,5.64,2.58,7.64,4.91Z"/><path d="M354.38,64.99c-1.99-9.95-3.47-22.32-2.74-32.44.4-1.92.79-3.85,1.19-5.78,2.27-6.44-.38-13.81-5.46-18.15-2.33-1.99-5.18-3.35-8.3-3.68-10.4-1.09-19.26,7.61-24.49,16.66-2.29,3.96-4.2,8.14-5.72,12.45-2.19-2.76-5.08-3.87-8.33-3.66-.06,0-.13,0-.19.01-.03,0-.06.01-.09.01-.27.03-.54.06-.81.1-.05,0-.09.01-.14.02-19.32,2.62-30.89,22.3-32.3,40.47-.39,4.98.02,10.11,1.47,14.9.03.1.06.19.11.27.92,3.84,2.52,7.57,4.92,11.07,3.76,5.47,10.07,8.47,16.35,8.87,7.48.49,17.49-4.26,22.98-11.57,1.24,2.08,2.7,4.02,4.44,5.7,3.78,3.68,9.08,6.06,14.31,5.36,3.88-.52,7.38-2.67,10.34-5.23,9.9-8.56,14.81-22.51,12.46-35.38ZM294.33,77.16c-.64,1.06-.85,1.2-1.81,1.06-.91-.15-1.53-1.33-1.42-3.11.05-.86.49-2.34.49-2.34,0,0,.88-2.05,1.73-2.33.85-.3,1.56-.15,1.83,1.16.27,1.3-.2,4.53-.82,5.56Z"/><path d="M96.33,17.16c-5.59-6.01-17.54-9.02-28.49-9.25-1.26-1.86-2.82-3.5-4.58-4.79C60.69,1.22,57.68.06,54.53,0c-6.72-.12-12.33,3.96-16.57,9.56C25.28,10.87,7.53,19,1.92,29.2c-6.61,12.19,5.38,19.89,12.74,21.03,3.8.77,7.62.91,11.43.61-.1,13.27,2.78,26.67,8.59,38.64,2.44,5.05,5.46,9.95,9.68,13.49,4.21,3.53,9.79,5.56,14.91,4.32,3.81-.92,7.04-3.52,9.68-6.51,8.84-10,12.04-25.23,8.13-38.64-1.68-5.47-3.31-11.67-4.54-17.89,5.21-.64,10.32-1.92,15.18-4.27,6.61-2.86,17.4-12.99,8.61-22.82ZM51.06,44.46h-.09l.18-.02.21-.04s-.07.02-.1.03c-.03.02-.07.03-.1.04-.03,0-.07,0-.1-.01Z"/><path d="M260.6,79.38s-.06-.06-.09-.09c-.05-.04-.11-.09-.17-.13-.76-.63-1.7-1-2.84-1.07-1.35-.08-2.97.29-4.86,1.24-1.15.57-2.21,1.31-3.18,2.15-1.56,1.35-3.38,1.95-4.98,2.01-2.78.12-4.86-1.4-3.59-3.5.52-.85,1.39-1.41,2.33-1.7,12.63-3.83,23.77-14.48,23.89-27.74-.25-15-13.85-20.28-27.79-20.35-7.77-.06-15.64,1.51-21.37,3.9-13.67,4.73-24.42,19.11-26.34,33.76-1.86,14.22,3.45,28.87,18,35.93,2.65,1.17,5.46,2.03,8.35,2.6,9.57.47,30.07.13,40.7-10.28,3.05-3.91,4.15-7.69,4.03-10.82.01-.06.01-.11,0-.17-.11-2.36-.91-4.34-2.08-5.73h-.01ZM232.17,50.84c-.43-.82.16-2.03,1.65-2.99.26-.17.6-.34.95-.5.88-.4,1.83-.67,2.8-.72.2,0,.39-.01.58,0h.02c.3.03.56.1.74.22.73.52,1.04,1.18.15,2.17-.89,1-3.77,2.53-4.97,2.64-.08.01-.16.01-.24.02-.99.02-1.3-.15-1.67-.85Z"/></svg></a>
-  <button class="bag" id="bag" type="button">Panier · <span id="count">0</span></button>
+  <div class="right">
+    <button class="snd" id="snd" type="button" aria-label="Activer le son"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="sndT">Son</span></button>
+    <button class="bag" id="bag" type="button">Panier · <span id="count">0</span></button>
+  </div>
 </div>
 
 <header class="hero" id="top">
@@ -255,7 +283,8 @@
           </div>
         </div>
         <div class="seek"><span id="cur">0:00</span><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Position dans le titre"><span id="dur">0:00</span></div>
-        <p class="demo">Démo : son de la live session. Sur le vrai site, les 6 titres de l'EP en boucle.</p>
+        <div class="lyrics" id="lyrics" aria-live="off"><ol id="lyr"></ol></div>
+        <p class="demo">Démo : son de la live session et paroles fictives. Sur le vrai site, les 6 titres de l'EP en boucle, avec leurs paroles.</p>
       </div>
       <div class="btns reveal">
         <a class="btn ghost" href="https://ffm.to/premire-leon-de-vol" target="_blank" rel="noopener">Toutes les plateformes</a>
@@ -298,6 +327,7 @@
             <button class="nav prev" type="button" aria-label="Image précédente">‹</button>
             <button class="nav next" type="button" aria-label="Image suivante">›</button>
             <div class="dots" aria-hidden="true"><i class="on"></i><i></i></div>
+            <span class="spin-hint" id="spinHint">↔ Faites-le tourner</span>
           </div>
           <div class="prow"><h3 class="pn">T-shirt PLDV</h3><span class="pp">30 €</span></div>
           <p class="pm">Avion en papier devant, l'oiseau et la tracklist dans le dos.</p>
@@ -312,10 +342,10 @@
         <article class="prod">
           <div class="pic">
             <span class="tag">Tirage limité</span>
-            <div class="poster"><img src="assets/cover.jpg" alt="Poster : la cover de l'EP"></div>
+            <div class="poster land"><picture><source srcset="assets/poster.webp" type="image/webp"><img src="assets/poster.jpg" width="1600" height="1133" loading="lazy" alt="Poster : Thed et l'enfant au planeur sur le sol volcanique"></picture></div>
           </div>
           <div class="prow"><h3 class="pn">Poster de l'EP</h3><span class="pp">20 €</span></div>
-          <p class="pm">La cover « Première leçon de vol ». Livré en tube.</p>
+          <p class="pm">Grand format A1 (84 × 59 cm), photo de l'EP. Livré en tube.</p>
           <button class="btn add" type="button" data-name="Poster">Ajouter au panier</button>
         </article>
       </div>
@@ -378,6 +408,50 @@
 
   /* Bar turns solid once the video is behind us */
   const bar = document.getElementById("bar");
+  /* Sky: night -> dawn with the scroll. Stars fade as the light comes up. */
+  const sky = document.getElementById("sky"), starsC = document.getElementById("stars"), sctx = starsC.getContext("2d");
+  const STOPS = [ // p, top colour, bottom colour, glow alpha
+    [0, [6, 10, 20], [8, 14, 30], 0],
+    [.35, [8, 14, 36], [16, 30, 74], 0],
+    [.62, [16, 24, 66], [52, 50, 112], .08],
+    [.84, [34, 36, 92], [128, 74, 120], .3],
+    [1, [44, 44, 104], [214, 112, 82], .62]
+  ];
+  const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+  const rgb = c => `rgb(${c[0]},${c[1]},${c[2]})`;
+  let stars = [];
+  const makeStars = () => {
+    const d = Math.min(2, devicePixelRatio || 1); starsC.width = innerWidth * d; starsC.height = innerHeight * d;
+    stars = Array.from({ length: Math.round(innerWidth * innerHeight / 3200) }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.1 + .3, a: Math.random() * .7 + .3, tw: Math.random() * 6 }));
+  };
+  makeStars(); addEventListener("resize", makeStars);
+  const skyAt = p => {
+    let i = 0; while (i < STOPS.length - 2 && p > STOPS[i + 1][0]) i++;
+    const A = STOPS[i], B = STOPS[i + 1], t = Math.max(0, Math.min(1, (p - A[0]) / (B[0] - A[0])));
+    return { top: mix(A[1], B[1], t), bot: mix(A[2], B[2], t), glow: A[3] + (B[3] - A[3]) * t };
+  };
+  let skyP = -1;
+  function paintSky(now) {
+    const max = Math.max(1, document.documentElement.scrollHeight - innerHeight), p = Math.min(1, scrollY / max);
+    if (Math.abs(p - skyP) > .002) {
+      skyP = p; const k = skyAt(p);
+      sky.style.background = `radial-gradient(120% 55% at 50% 108%, rgba(240,140,90,${k.glow.toFixed(3)}), transparent 70%), linear-gradient(${rgb(k.top)}, ${rgb(k.bot)})`;
+      document.documentElement.style.setProperty("--sky-top", rgb(k.top));
+      document.documentElement.style.setProperty("--sky-bar", `rgba(${k.top.join(",")},.78)`);
+    }
+    const d = starsC.width / innerWidth, fade = 1 - Math.min(1, Math.max(0, (skyP - .45) / .5)) * .85, t = now / 1000;
+    sctx.clearRect(0, 0, starsC.width, starsC.height);
+    sctx.fillStyle = "#fff";
+    for (const s of stars) {
+      const tw = reduce ? 1 : .65 + .35 * Math.sin(t * 1.3 + s.tw);
+      sctx.globalAlpha = s.a * tw * fade * (1 - s.y * skyP * .9);
+      sctx.beginPath(); sctx.arc(s.x * starsC.width, ((s.y * innerHeight - scrollY * .04 % innerHeight + innerHeight) % innerHeight) * d, s.r * d, 0, 7); sctx.fill();
+    }
+    sctx.globalAlpha = 1;
+    requestAnimationFrame(paintSky);
+  }
+  requestAnimationFrame(paintSky);
+
   const onScroll = () => bar.classList.toggle("solid", scrollY > innerHeight * .7);
   addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
@@ -432,18 +506,60 @@
     document.getElementById("pos").textContent = (idx + 1) + "/" + TR.length;
     lis.forEach((li, k) => li.classList.toggle("on", started && k === idx));
   };
-  const play = () => { started = true; setTrack(idx); audio.play().catch(() => {}); loadEnv(); };
-  const toggle = () => audio.paused ? play() : audio.pause();
-  const jump = i => { setTrack(i); audio.currentTime = 0; play(); };
+  // Volume: WebAudio gain when we are inside a real gesture (iOS ignores audio.volume), else audio.volume
+  let actx = null, gain = null, userPaused = false, fadeRaf = 0;
+  const sameOrigin = () => { try { return new URL(audio.currentSrc || audio.src, location.href).origin === location.origin; } catch (e) { return false; } };
+  const setupGraph = () => {
+    if (actx || !sameOrigin()) return;
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    try { actx = new AC(); const src = actx.createMediaElementSource(audio); gain = actx.createGain(); src.connect(gain).connect(actx.destination); actx.resume(); }
+    catch (e) { actx = null; gain = null; }
+  };
+  const fadeIn = secs => {
+    cancelAnimationFrame(fadeRaf);
+    if (gain) { const t = actx.currentTime; gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(0.0001, t); gain.gain.exponentialRampToValueAtTime(1, t + secs); audio.volume = 1; return; }
+    const t0 = performance.now(); audio.volume = 0;
+    const step = now => { const k = Math.min(1, (now - t0) / (secs * 1000)); audio.volume = k * k; if (k < 1) fadeRaf = requestAnimationFrame(step); };
+    fadeRaf = requestAnimationFrame(step);
+  };
+  const play = (secs = .6) => {
+    started = true; userPaused = false; setTrack(idx); loadEnv();
+    if (actx && actx.state !== "running") actx.resume();
+    const pr = audio.play(); fadeIn(secs);
+    return pr && pr.catch ? pr : Promise.resolve();
+  };
+  const toggle = () => { if (audio.paused) { setupGraph(); play(); } else { userPaused = true; audio.pause(); } };
+
+  // Autoplay: after 2 s or on the first scroll, with a slow crescendo.
+  // Browsers only allow sound after a tap, so if that is refused we retry on the visitor's first touch.
+  let autoDone = false;
+  const tryAuto = gesture => {
+    if (autoDone || userPaused || !audio.paused) return;
+    if (gesture) setupGraph();
+    play(4).then(() => { if (!audio.paused) { autoDone = true; disarm(); } }).catch(() => { started = audio.paused ? started : true; });
+  };
+  const onGesture = () => tryAuto(true), onFirstScroll = () => tryAuto(false);
+  const GEST = ["pointerdown", "touchend", "keydown", "click"];
+  const disarm = () => { GEST.forEach(ev => removeEventListener(ev, onGesture, true)); removeEventListener("scroll", onFirstScroll); };
+  GEST.forEach(ev => addEventListener(ev, onGesture, { capture: true, passive: true }));
+  addEventListener("scroll", onFirstScroll, { passive: true });
+  setTimeout(() => tryAuto(false), 2000);
+
+  // Sound toggle in the top bar
+  const snd = document.getElementById("snd"), sndT = document.getElementById("sndT");
+  snd.addEventListener("click", e => { e.stopPropagation(); autoDone = true; disarm(); toggle(); });
+  const jump = i => { setTrack(i); audio.currentTime = 0; setupGraph(); play(); };
   const sync = () => {
     const on = !audio.paused;
     [deck, mini].forEach(el => el.classList.toggle("playing", on));
     document.querySelectorAll(".ply").forEach(b => b.setAttribute("aria-label", on ? "Pause" : "Lecture"));
+    snd.classList.toggle("on", on); sndT.textContent = on ? "Son" : "Coupé"; snd.setAttribute("aria-label", on ? "Couper le son" : "Activer le son");
+    if (on) { autoDone = true; disarm(); }
     lis.forEach((li, k) => li.classList.toggle("on", started && k === idx));
     showMini();
   };
   audio.addEventListener("play", sync); audio.addEventListener("pause", sync);
-  audio.addEventListener("ended", () => jump(idx + 1)); // whole EP on loop
+  audio.addEventListener("ended", () => { setTrack(idx + 1); audio.currentTime = 0; play(.01); }); // whole EP on loop
   audio.addEventListener("loadedmetadata", () => dur.textContent = fmt(audio.duration));
   audio.addEventListener("timeupdate", () => {
     const p = audio.duration ? audio.currentTime / audio.duration : 0;
@@ -452,19 +568,20 @@
     cur.textContent = fmt(audio.currentTime);
   });
   seek.addEventListener("input", () => { if (audio.duration) audio.currentTime = seek.value / 1000 * audio.duration; seek.style.setProperty("--p", seek.value / 10 + "%"); });
-  document.getElementById("pp").addEventListener("click", toggle);
-  document.getElementById("miniPP").addEventListener("click", toggle);
+  document.getElementById("pp").addEventListener("click", e => { autoDone = true; disarm(); toggle(); });
+  document.getElementById("miniPP").addEventListener("click", e => { autoDone = true; disarm(); toggle(); });
   document.getElementById("prev").addEventListener("click", () => jump(audio.currentTime > 3 ? idx : idx - 1));
   document.getElementById("next").addEventListener("click", () => jump(idx + 1));
   document.querySelectorAll(".trk").forEach(b => b.addEventListener("click", () => {
     const i = +b.dataset.i; if (i === idx && started) toggle(); else jump(i);
   }));
-  document.getElementById("heroPlay").addEventListener("click", () => { play(); document.getElementById("ep").scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); });
+  document.getElementById("heroPlay").addEventListener("click", () => { autoDone = true; disarm(); setupGraph(); play(); document.getElementById("ep").scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); });
   document.getElementById("miniGo").addEventListener("click", () => deck.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" }));
   // mini player: only once music started, and only while the EP deck is off screen
-  let deckVisible = true;
+  let deckVisible = true, heroVisible = true;
   new IntersectionObserver(([e]) => { deckVisible = e.isIntersecting; showMini(); }, { threshold: .15 }).observe(deck);
-  function showMini() { const on = started && !deckVisible; mini.classList.toggle("show", on); document.body.classList.toggle("has-mini", on); }
+  new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; showMini(); }, { threshold: .35 }).observe(document.getElementById("top"));
+  function showMini() { const on = started && !deckVisible && !heroVisible; mini.classList.toggle("show", on); document.body.classList.toggle("has-mini", on); }
 
   // loudness envelope (50 frames / s) decoded once from the file
   function loadEnv() {
@@ -480,8 +597,38 @@
       env = out;
     }).catch(() => {});
   }
+  // Fake lyrics (demo), word-by-word highlight in time with the track
+  const LYR = [
+    [2.0, "J'ai pris mon élan au bord du toit"], [6.2, "Le vent m'a dit vas-y t'as pas le choix"],
+    [10.4, "Première leçon, les mains qui tremblent"], [14.6, "Le ciel est grand quand on saute ensemble"],
+    [18.8, "On décolle, on décolle"], [22.4, "Paris s'allume sous nos semelles"],
+    [26.6, "J'compte plus les fois où j'suis tombé"], [30.8, "Chaque chute m'a appris à voler"],
+    [35.0, "Allez, t'as juste à sauter dans le vide"], [39.6, "Les étoiles attendent, on est pas pressés"],
+    [44.0, "On va toucher les étoiles"], [48.2, "On va toucher les étoiles"]
+  ];
+  const lyrOl = document.getElementById("lyr");
+  lyrOl.innerHTML = LYR.map(([, l]) => "<li><p style=\"margin:0\">" + l.split(" ").map(w => "<span>" + w + "</span>").join(" ") + "</p></li>").join("");
+  const lyrLis = [...lyrOl.children], lyrWords = lyrLis.map(li => [...li.firstChild.children]);
+  let lyrCur = -2;
+  const syncLyrics = () => {
+    const ct = audio.currentTime;
+    let i = -1; for (let k = 0; k < LYR.length; k++) if (ct >= LYR[k][0]) i = k;
+    if (i !== lyrCur) {
+      lyrCur = i;
+      lyrLis.forEach((li, k) => { li.classList.toggle("cur", k === i); li.classList.toggle("past", k < i); });
+      lyrOl.style.transform = `translateY(${(1 - Math.max(0, i)) * 46 + (i < 0 ? 46 : 0)}px)`;
+    }
+    if (i >= 0) {
+      const end = i + 1 < LYR.length ? LYR[i + 1][0] - .4 : LYR[i][0] + 4, words = lyrWords[i];
+      const k = Math.floor((ct - LYR[i][0]) / Math.max(.5, end - LYR[i][0]) * words.length + .35);
+      words.forEach((w, j) => w.classList.toggle("sung", j < k));
+    }
+  };
+  audio.addEventListener("timeupdate", syncLyrics); syncLyrics();
+
   let lev = 0;
   (function meter() {
+    if (!audio.paused) syncLyrics();
     let e = 0;
     if (!audio.paused) {
       if (env) { const k = Math.min(env.length - 1, Math.floor(audio.currentTime * 50)); e = env[k]; }
@@ -567,6 +714,101 @@
     const r = teePic.getBoundingClientRect();
     go(e.clientX > r.left + r.width / 2 ? slide + 1 : slide - 1);
   });
+  // 3D t-shirt: loads three.js only when the shop gets close, falls back to the slider without WebGL
+  const spinHint = document.getElementById("spinHint");
+  const loadScript = src => new Promise((ok, ko) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = ko; document.head.appendChild(s); });
+  const loadImg = src => new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = src; });
+  const TEE_FRONT = "M140 40 L100 52 L30 98 L62 170 L100 150 L100 372 L300 372 L300 150 L338 170 L370 98 L300 52 L260 40 C250 70 225 84 200 84 C175 84 150 70 140 40Z";
+  const TEE_BACK = "M140 40 L100 52 L30 98 L62 170 L100 150 L100 372 L300 372 L300 150 L338 170 L370 98 L300 52 L260 40 C250 52 225 58 200 58 C175 58 150 52 140 40Z";
+  new IntersectionObserver((es, o) => es.forEach(e => { if (!e.isIntersecting) return; o.disconnect(); initTee3D().catch(() => {}); }), { rootMargin: "600px 0px" }).observe(teePic);
+
+  async function initTee3D() {
+    const test = document.createElement("canvas");
+    if (!(test.getContext("webgl2") || test.getContext("webgl"))) return;
+    if (!window.THREE) await loadScript("https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js");
+    const [front, back] = await Promise.all([loadImg("assets/tee-devant.png"), loadImg("assets/tee-dos.png")]);
+    const T = window.THREE, N = 512;
+
+    // Textures: front shows the inside of the collar where the neckline dips
+    const tex = (isFront) => {
+      const c = document.createElement("canvas"); c.width = c.height = N; const g = c.getContext("2d"); g.scale(N / 400, N / 400);
+      g.fillStyle = "#d9d5cb"; g.fill(new Path2D(TEE_BACK));
+      g.fillStyle = isFront ? "#f7f5ef" : "#f3f1ea"; g.fill(new Path2D(isFront ? TEE_FRONT : TEE_BACK));
+      // collar rib + hems
+      g.strokeStyle = "rgba(0,0,0,.08)"; g.lineWidth = 5;
+      g.stroke(new Path2D(isFront ? "M140 40 C150 70 175 84 200 84 C225 84 250 70 260 40" : "M140 40 C150 52 175 58 200 58 C225 58 250 52 260 40"));
+      g.lineWidth = 2; g.stroke(new Path2D("M104 362 L296 362 M36 112 L66 162 M364 112 L334 162"));
+      const im = isFront ? front : back, w = isFront ? 118 : 141, top = isFront ? 132 : 86;
+      g.drawImage(im, 200 - w / 2, top, w, w * im.height / im.width);
+      const t = new T.CanvasTexture(c); t.encoding = T.sRGBEncoding; t.anisotropy = 4; return t;
+    };
+    // Height field: distance to the silhouette edge, so the shirt is softly "inflated"
+    const G = 200, m = document.createElement("canvas"); m.width = m.height = G;
+    const mg = m.getContext("2d"); mg.scale(G / 400, G / 400); mg.fill(new Path2D(TEE_BACK));
+    const md = mg.getImageData(0, 0, G, G).data, D = new Float32Array(G * G);
+    for (let i = 0; i < G * G; i++) D[i] = md[i * 4 + 3] > 127 ? 1e6 : 0;
+    for (let y = 0; y < G; y++) for (let x = 0; x < G; x++) { const i = y * G + x; if (!D[i]) continue; if (x) D[i] = Math.min(D[i], D[i - 1] + 1); if (y) D[i] = Math.min(D[i], D[i - G] + 1); if (x && y) D[i] = Math.min(D[i], D[i - G - 1] + 1.414); if (y && x < G - 1) D[i] = Math.min(D[i], D[i - G + 1] + 1.414); }
+    for (let y = G - 1; y >= 0; y--) for (let x = G - 1; x >= 0; x--) { const i = y * G + x; if (!D[i]) continue; if (x < G - 1) D[i] = Math.min(D[i], D[i + 1] + 1); if (y < G - 1) D[i] = Math.min(D[i], D[i + G] + 1); if (x < G - 1 && y < G - 1) D[i] = Math.min(D[i], D[i + G + 1] + 1.414); if (y < G - 1 && x) D[i] = Math.min(D[i], D[i + G - 1] + 1.414); }
+    const at = (x, y) => D[Math.min(G - 1, Math.max(0, y)) * G + Math.min(G - 1, Math.max(0, x))];
+    const hAt = (u, v) => { const fx = u * (G - 1), fy = v * (G - 1), x = Math.floor(fx), y = Math.floor(fy), tx = fx - x, ty = fy - y;
+      return (at(x, y) * (1 - tx) + at(x + 1, y) * tx) * (1 - ty) + (at(x, y + 1) * (1 - tx) + at(x + 1, y + 1) * tx) * ty; };
+
+    const half = (isFront) => {
+      const geo = new T.PlaneGeometry(2, 2, 150, 150), pos = geo.attributes.position, uv = geo.attributes.uv;
+      for (let i = 0; i < pos.count; i++) {
+        const u = uv.getX(i), v = 1 - uv.getY(i), d = hAt(u, v);
+        const dd = Math.max(0, d - 1.3); let z = .2 * Math.sqrt(Math.min(dd, 22) / 22) * (1 - .25 * v);            // body depth, a bit flatter at the hem
+        z += d > 2 ? .012 * Math.sin(u * 19 + v * 7) * Math.sin(v * 13) : 0;     // fabric folds
+        pos.setZ(i, z);
+      }
+      geo.computeVertexNormals();
+      const mesh = new T.Mesh(geo, new T.MeshStandardMaterial({ map: tex(isFront), alphaTest: .5, roughness: .92, metalness: 0 }));
+      if (!isFront) mesh.rotation.y = Math.PI; // the back is the same shell seen from behind
+      return mesh;
+    };
+
+    const cv = document.createElement("canvas"); cv.className = "tee3d"; teePic.insertBefore(cv, teePic.firstChild.nextSibling);
+    const r = new T.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
+    r.setPixelRatio(Math.min(2, devicePixelRatio || 1)); r.outputEncoding = T.sRGBEncoding; r.toneMapping = T.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+    const scene = new T.Scene(), cam = new T.PerspectiveCamera(30, 1, .1, 20); cam.position.set(0, 0, 4.3);
+    const tee = new T.Group(); tee.add(half(true), half(false)); scene.add(tee);
+    scene.add(new T.HemisphereLight(0xdfe8ff, 0x1a2238, .75));
+    const key = new T.DirectionalLight(0xffffff, 1.5); key.position.set(2.2, 2.5, 3); scene.add(key);
+    const rim = new T.DirectionalLight(0x7fd8ff, .9); rim.position.set(-3, 1, -2.5); scene.add(rim);
+    const fill = new T.DirectionalLight(0xffd9b0, .35); fill.position.set(-2, -1, 3); scene.add(fill);
+    const size = () => { const w = teePic.clientWidth, h = teePic.clientHeight; r.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); };
+    size(); addEventListener("resize", size);
+    teePic.classList.add("is3d");
+
+    // Drag to spin (horizontal only, vertical swipes still scroll the page), inertia, slow idle spin
+    let rot = -.35, vel = 0, dragging = false, lx = 0, ly = 0, axis = null, idleAt = 0, visible = true;
+    cv.addEventListener("pointerdown", e => { dragging = true; axis = null; lx = e.clientX; ly = e.clientY; vel = 0; });
+    addEventListener("pointermove", e => {
+      if (!dragging) return;
+      const dx = e.clientX - lx, dy = e.clientY - ly;
+      if (!axis) { if (Math.abs(dx) + Math.abs(dy) < 6) return; axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y"; if (axis === "y") { dragging = false; return; } cv.setPointerCapture && cv.setPointerCapture(e.pointerId); spinHint.classList.add("gone"); }
+      const d = dx * .012; rot += d; vel = d; lx = e.clientX; ly = e.clientY;
+    });
+    const up = () => { if (dragging) idleAt = performance.now() + 2500; dragging = false; };
+    addEventListener("pointerup", up); addEventListener("pointercancel", up);
+    teePic.addEventListener("click", e => e.stopImmediatePropagation(), true); // no slider taps in 3D
+    new IntersectionObserver(([e]) => visible = e.isIntersecting).observe(teePic);
+    let last = performance.now();
+    (function loop(now) {
+      const dt = Math.min(.05, (now - last) / 1000); last = now;
+      if (visible) {
+        if (!dragging) { rot += vel; vel *= .94; if (Math.abs(vel) < .0008 && now > idleAt && !reduce) rot += dt * .45; }
+        tee.rotation.y = rot;
+        tee.rotation.z = reduce ? 0 : Math.sin(now / 1400) * .025;
+        tee.position.y = reduce ? 0 : Math.sin(now / 1100) * .03;
+        const a = ((rot % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+        sideLabel.textContent = a > Math.PI / 2 && a < 3 * Math.PI / 2 ? "Dos" : "Devant";
+        r.render(scene, cam);
+      }
+      requestAnimationFrame(loop);
+    })(last);
+  }
+
   const sizes = document.getElementById("sizes");
   sizes.addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; sizes.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", String(x === b))); });
   let count = 0, tt;
