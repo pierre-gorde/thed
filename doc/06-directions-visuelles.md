@@ -55,11 +55,19 @@ V3 :
 
 Son de démo : la live session. En vrai : les 6 MP3 de l'EP (à demander à Théo), hébergés avec le site (~30 Mo, gratuit).
 
+## V4 (23/11, 17h)
+
+- Son auto : démarre au bout de 2 s ou au premier scroll, en crescendo (4 s). Les navigateurs mobiles bloquent le son tant qu'on n'a pas touché l'écran : dans ce cas il démarre au premier toucher. Bouton « Son » dans la barre du haut pour couper.
+- Paroles fictives qui défilent mot à mot dans le lecteur (à remplacer par les vraies).
+- Ciel : nuit étoilée en haut, aube en bas de page.
+- T-shirt en 3D (Three.js chargé seulement près de la boutique), on le tourne au doigt. Sans WebGL : le slider reste.
+- Poster : le vrai visuel (A1 paysage).
+
 ## Dates et Shotgun
 
 - Shotgun n'a pas d'API publique ni de widget (vérifié le 23/11).
 - Shotgun pousse déjà les dates sur Spotify, Bandsintown et Songkick.
-- Option 1 (zéro saisie) : lire les dates depuis l'API Bandsintown. Gratuit. À vérifier : que les dates de Thed y remontent bien.
+- Option 1 (zéro saisie) : lire les dates depuis l'API Bandsintown. Gratuit. **Choisie par Pierre (23/11).** Vérif du 23/11 : aucune page Bandsintown trouvée pour Thed → il faut créer / réclamer le profil sur Bandsintown for Artists (gratuit), puis vérifier que Shotgun y pousse les dates. La clé d'API se demande depuis ce compte artiste.
 - Option 2 : saisie à la main dans Shopify (1 min par date) avec le lien Shotgun. Les dates passées basculent toutes seules.
 
 ## Idées waouh (à trier)

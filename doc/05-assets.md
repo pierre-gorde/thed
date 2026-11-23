@@ -15,7 +15,7 @@
 | `canva.mp4` | Vidéo 64 Mo | Planeur en vol sur ciel bleu | Boucle vidéo, transition |
 | `bon.mp4` | Vidéo 72 Mo | Thed de dos face à une grande foule, live | Section concerts |
 | `réél_1.mp4` | Vidéo 425 Mo | Extrait live session (toit, guitare-voix) | Section musique |
-| `poster bon.pdf` | PDF 237 Mo | Poster mis en vente (fichier d'impression) | À convertir en JPG web |
+| `poster bon.pdf` | PDF 237 Mo | Poster mis en vente (fichier d'impression) | Converti (23/11) : `prototypes/assets/poster.jpg` 1600 px, 230 Ko + `.webp` 160 Ko. Format A1 paysage |
 
 À ignorer : les fichiers `._*` et `.DS_Store` (déchets macOS), et le PDF d'IBAN (n'a rien à faire dans un dossier d'assets).
 
