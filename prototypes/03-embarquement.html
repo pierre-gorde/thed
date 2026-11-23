@@ -115,7 +115,17 @@
   .pic svg { position: absolute; inset: 6%; width: 88%; height: 88%; }
   .pic img.print { position: absolute; left: 50%; transform: translateX(-50%); transition: opacity .35s ease; }
   .pic .front { top: 35%; width: 26%; } .pic .backside { top: 25%; width: 31%; opacity: 0; }
-  .pic.back .front { opacity: 0; } .pic.back .backside { opacity: 1; }
+  .slider { touch-action: pan-y; cursor: pointer; user-select: none; -webkit-user-select: none; }
+  .slider .track { position: absolute; inset: 0; display: flex; width: 200%; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+  .slider .slide { position: relative; width: 50%; height: 100%; }
+  .slider .slide .backside { opacity: 1; }
+  .side-label { position: absolute; top: 10px; right: 10px; font: 600 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); padding: 6px 0; }
+  .nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(6,10,20,.45); color: var(--ink); font: 400 26px/1 var(--text); display: grid; place-items: center; cursor: pointer; transition: opacity .2s ease; }
+  .nav.prev { left: 8px; } .nav.next { right: 8px; }
+  .nav[disabled] { opacity: 0; pointer-events: none; }
+  .dots { position: absolute; left: 0; right: 0; bottom: 10px; display: flex; justify-content: center; gap: 6px; }
+  .dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.35); transition: background .3s ease, width .3s ease; }
+  .dots i.on { background: var(--ink); width: 16px; border-radius: 3px; }
   .pic .poster { position: absolute; inset: 12% 16%; background: #fff; padding: 8px; box-shadow: 0 18px 30px rgba(0,0,0,.5); transform: rotate(-2deg); }
   .pic .poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
   .tag { position: absolute; top: 10px; left: 10px; font: 600 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; background: var(--flap-ink); color: #111; padding: 6px 8px; border-radius: 6px; }
@@ -130,6 +140,58 @@
 
   .end { padding-block: 80px calc(env(safe-area-inset-bottom, 0px) + 48px); text-align: center; }
   .links { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .platforms { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 18px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .platforms a { font: 600 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); text-decoration: none; padding: 8px 0; }
+  .platforms a:hover, .platforms a:focus-visible { color: var(--ink); }
+
+  /* The white paper plane that glides down the page with you */
+  /* Player */
+  .tracks li { grid-template-columns: 38px minmax(0, 1fr); padding: 0; }
+  .tracks li::before { align-self: center; }
+  .trk { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 13px 0; -webkit-tap-highlight-color: transparent; }
+  .trk:focus-visible { outline: 2px solid var(--canopy); outline-offset: 2px; border-radius: 4px; }
+  .tracks li.on::before, .tracks li.on b { color: var(--canopy); }
+  .eq { display: inline-flex; align-items: flex-end; gap: 3px; height: 16px; flex: none; opacity: 0; transition: opacity .3s; }
+  .eq i { width: 3px; height: 30%; background: currentColor; border-radius: 1px; }
+  .on .eq, .mini .eq { opacity: 1; color: var(--canopy); }
+  .deck { margin-top: 18px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px; }
+  .deck .row { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 14px; align-items: center; }
+  .ply { width: 56px; height: 56px; border-radius: 50%; border: 0; background: var(--ink); color: var(--night); display: grid; place-items: center; cursor: pointer; transition: transform .15s; }
+  .ply:active { transform: scale(.94); }
+  .ply svg { width: 22px; height: 22px; }
+  .ply .i-pause, .playing .ply .i-play { display: none; } .playing .ply .i-pause { display: block; }
+  .now { min-width: 0; }
+  .now small { display: block; font: 600 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
+  .now b { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; margin-top: 6px; font: 800 21px/1.02 var(--cond); text-transform: uppercase; overflow: hidden; text-wrap: balance; }
+  .skip { display: flex; gap: 6px; }
+  .skip button { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255,255,255,.22); background: transparent; color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+  .skip svg { width: 15px; height: 15px; }
+  .seek { display: grid; grid-template-columns: 3.2em minmax(0, 1fr) 3.2em; gap: 10px; align-items: center; margin-top: 14px; font: 500 11px/1 var(--mono); color: var(--ink-soft); }
+  .seek span:last-child { text-align: right; }
+  .seek input { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; margin: 0; background: transparent; cursor: pointer; --p: 0%; }
+  .seek input::-webkit-slider-runnable-track { height: 3px; border-radius: 2px; background: linear-gradient(to right, var(--canopy) var(--p), rgba(255,255,255,.18) var(--p)); }
+  .seek input::-moz-range-track { height: 3px; border-radius: 2px; background: linear-gradient(to right, var(--canopy) var(--p), rgba(255,255,255,.18) var(--p)); }
+  .seek input::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 13px; margin-top: -5px; border-radius: 50%; background: var(--ink); border: 0; }
+  .seek input::-moz-range-thumb { width: 13px; height: 13px; border-radius: 50%; background: var(--ink); border: 0; }
+  .demo { margin: 10px 0 0; font: 500 11px/1.45 var(--mono); color: var(--ink-soft); }
+  .release img { transition: transform .12s linear; will-change: transform; }
+  .mini { position: fixed; z-index: 7; left: calc(var(--gutter-l) - 4px); right: calc(var(--gutter-r) - 4px); bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+    max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: 42px minmax(0, 1fr) 42px; gap: 12px; align-items: center; padding: 8px 8px 10px;
+    background: rgba(13,20,36,.86); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border: 1px solid var(--line); border-radius: 14px; overflow: hidden;
+    transform: translateY(calc(100% + 30px)); visibility: hidden; transition: transform .45s cubic-bezier(.2,.8,.2,1), visibility 0s .45s; }
+  .mini.show { transform: none; visibility: visible; transition-delay: 0s; }
+  .mini img { width: 42px; height: 42px; border-radius: 6px; object-fit: cover; }
+  .mini .t { all: unset; cursor: pointer; min-width: 0; }
+  .mini .t small { display: flex; align-items: center; gap: 8px; font: 600 10px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); }
+  .mini .t small .eq { height: 10px; }
+  .mini .t b { display: block; margin-top: 5px; font: 800 18px/1 var(--cond); text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini .ply { width: 42px; height: 42px; } .mini .ply svg { width: 17px; height: 17px; }
+  .mini .bar2 { position: absolute; left: 0; bottom: 0; height: 2px; width: var(--p, 0%); background: var(--canopy); }
+  body.has-mini { padding-bottom: 76px; }
+  body.has-mini .toast { bottom: calc(env(safe-area-inset-bottom, 0px) + 88px); }
+  #glide { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 6; overflow: visible; }
+  #glide .trail { fill: none; stroke: rgba(255,255,255,.4); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 1.5 7; }
+  #glide .plane { filter: drop-shadow(0 6px 10px rgba(0,0,0,.35)); }
   .proto { margin-top: 32px; font: 500 12px/1.4 var(--mono); color: var(--ink-soft); }
 
   .reveal { opacity: 0; transform: translateY(22px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.8,.2,1); }
@@ -161,7 +223,7 @@
     <h1>Première leçon de vol</h1>
     <div class="meta"><span>Thed</span><span>6 titres</span><span>13.11.2026</span></div>
     <div class="btns">
-      <a class="btn" href="https://linktr.ee/thed.nw" target="_blank" rel="noopener">Écouter</a>
+      <button class="btn" type="button" id="heroPlay">Écouter</button>
       <a class="btn ghost" href="#shop">Merch</a>
     </div>
   </div></div>
@@ -176,16 +238,27 @@
         <div><b>Allez, t'as juste à sauter dans le vide.</b><small>EP · 6 titres · 2026</small></div>
       </div>
       <ol class="tracks reveal">
-        <li><b>Première leçon de vol</b></li>
-        <li><b>C'est parti</b></li>
-        <li><b>Gênant gênant</b></li>
-        <li><b>Reste encore un peu</b></li>
-        <li><b>À l'abri dans mes rêves</b></li>
-        <li><b>Paris Eden</b></li>
+        <li><button class="trk" type="button" data-i="0"><b>Première leçon de vol</b><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button></li>
+        <li><button class="trk" type="button" data-i="1"><b>C'est parti</b><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button></li>
+        <li><button class="trk" type="button" data-i="2"><b>Gênant gênant</b><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button></li>
+        <li><button class="trk" type="button" data-i="3"><b>Reste encore un peu</b><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button></li>
+        <li><button class="trk" type="button" data-i="4"><b>À l'abri dans mes rêves</b><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button></li>
+        <li><button class="trk" type="button" data-i="5"><b>Paris Eden</b><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button></li>
       </ol>
+      <div class="deck reveal" id="deck">
+        <div class="row">
+          <button class="ply" type="button" id="pp" aria-label="Lecture"><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" fill="currentColor"/></svg><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z" fill="currentColor"/></svg></button>
+          <div class="now"><small>En boucle · <span id="pos">1/6</span></small><b id="nowT">Première leçon de vol</b></div>
+          <div class="skip">
+            <button type="button" id="prev" aria-label="Titre précédent"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h2.5v16H5zM20 4v16L8.5 12z" fill="currentColor"/></svg></button>
+            <button type="button" id="next" aria-label="Titre suivant"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 4H19v16h-2.5zM4 4v16l11.5-8z" fill="currentColor"/></svg></button>
+          </div>
+        </div>
+        <div class="seek"><span id="cur">0:00</span><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Position dans le titre"><span id="dur">0:00</span></div>
+        <p class="demo">Démo : son de la live session. Sur le vrai site, les 6 titres de l'EP en boucle.</p>
+      </div>
       <div class="btns reveal">
-        <a class="btn" href="https://linktr.ee/thed.nw" target="_blank" rel="noopener">Écouter l'EP</a>
-        <a class="btn ghost" href="https://www.deezer.com/fr/artist/198140397" target="_blank" rel="noopener">Deezer</a>
+        <a class="btn ghost" href="https://ffm.to/premire-leon-de-vol" target="_blank" rel="noopener">Toutes les plateformes</a>
       </div>
     </div>
   </section>
@@ -195,7 +268,7 @@
       <header class="reveal"><span class="label">02 · Live</span><h2>Live session</h2></header>
       <figure class="clip reveal">
         <video data-lazy src="assets/session.mp4" muted playsinline loop preload="none" poster="assets/session-poster.jpg"></video>
-        <figcaption><span class="rec"><i></i> Live session</span><a class="btn ghost" href="https://linktr.ee/thed.nw" target="_blank" rel="noopener">Voir en entier</a></figcaption>
+        <figcaption><span class="rec"><i></i> Live session</span><a class="btn ghost" href="https://youtube.com/@theeeed" target="_blank" rel="noopener">Voir en entier</a></figcaption>
       </figure>
     </div>
   </section>
@@ -215,18 +288,19 @@
       <header class="reveal"><span class="label">04 · Merch</span><h2>Boutique</h2></header>
       <div class="shelf reveal">
         <article class="prod">
-          <div class="pic" id="teePic">
+          <div class="pic slider" id="teePic" role="group" aria-roledescription="carrousel" aria-label="T-shirt, devant et dos">
+            <div class="track">
+              <div class="slide" aria-label="Devant"><svg viewBox="0 0 400 400" aria-hidden="true"><path d="M140 40 L100 52 L30 98 L62 170 L100 150 L100 372 L300 372 L300 150 L338 170 L370 98 L300 52 L260 40 C250 70 225 84 200 84 C175 84 150 70 140 40Z" fill="#f7f5ef"/></svg><img class="print front" src="assets/tee-devant.png" alt="Devant : avion en papier et PLDV"></div>
+              <div class="slide" aria-label="Dos"><svg viewBox="0 0 400 400" aria-hidden="true"><path d="M140 40 L100 52 L30 98 L62 170 L100 150 L100 372 L300 372 L300 150 L338 170 L370 98 L300 52 L260 40 C250 52 225 58 200 58 C175 58 150 52 140 40Z" fill="#f1efe8"/></svg><img class="print backside" src="assets/tee-dos.png" alt="Dos : oiseau sur un avion en papier et tracklist"></div>
+            </div>
             <span class="tag">Édition EP</span>
-            <svg viewBox="0 0 400 400" aria-hidden="true"><path d="M140 40 L100 52 L30 98 L62 170 L100 150 L100 372 L300 372 L300 150 L338 170 L370 98 L300 52 L260 40 C250 70 225 84 200 84 C175 84 150 70 140 40Z" fill="#f7f5ef"/></svg>
-            <img class="print front" src="assets/tee-devant.png" alt="Devant : avion en papier et PLDV">
-            <img class="print backside" src="assets/tee-dos.png" alt="Dos : oiseau sur un avion en papier et tracklist">
+            <span class="side-label" id="sideLabel">Devant</span>
+            <button class="nav prev" type="button" aria-label="Image précédente">‹</button>
+            <button class="nav next" type="button" aria-label="Image suivante">›</button>
+            <div class="dots" aria-hidden="true"><i class="on"></i><i></i></div>
           </div>
           <div class="prow"><h3 class="pn">T-shirt PLDV</h3><span class="pp">30 €</span></div>
           <p class="pm">Avion en papier devant, l'oiseau et la tracklist dans le dos.</p>
-          <div class="chips" role="group" aria-label="Côté">
-            <button class="chip side" type="button" aria-pressed="true" data-side="front">Devant</button>
-            <button class="chip side" type="button" aria-pressed="false" data-side="back">Dos</button>
-          </div>
           <div class="chips" role="group" aria-label="Taille" id="sizes">
             <button class="chip" type="button" aria-pressed="false">S</button>
             <button class="chip" type="button" aria-pressed="true">M</button>
@@ -255,12 +329,35 @@
       <div class="links">
         <a class="btn ghost" href="https://www.instagram.com/thed.nw/" target="_blank" rel="noopener">Instagram</a>
         <a class="btn ghost" href="https://www.tiktok.com/@thed.nw" target="_blank" rel="noopener">TikTok</a>
-        <a class="btn ghost" href="https://linktr.ee/thed.nw" target="_blank" rel="noopener">Écouter</a>
       </div>
-      <p class="proto">Prototype « Embarquement », V2. Prix et dates fictifs.</p>
+      <div class="platforms">
+        <a href="https://open.spotify.com/artist/3gFZrEpUIUphZLOUPOBD85" target="_blank" rel="noopener">Spotify</a>
+        <a href="https://music.apple.com/fr/artist/thed/1663638634" target="_blank" rel="noopener">Apple Music</a>
+        <a href="https://www.deezer.com/fr/artist/198140397" target="_blank" rel="noopener">Deezer</a>
+        <a href="https://youtube.com/@theeeed" target="_blank" rel="noopener">YouTube</a>
+      </div>
+      <p class="proto">Prototype « Embarquement », V3. Prix et dates fictifs.</p>
     </div>
   </section>
 </main>
+
+<audio id="audio" preload="none" src="assets/ep-demo.mp3"></audio>
+<div class="mini" id="mini" aria-label="Lecteur">
+  <img src="assets/cover.jpg" alt="">
+  <button class="t" type="button" id="miniGo" aria-label="Revenir à l'EP"><small><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>En boucle</small><b id="miniT">Première leçon de vol</b></button>
+  <button class="ply" type="button" id="miniPP" aria-label="Lecture"><svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z" fill="currentColor"/></svg><svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z" fill="currentColor"/></svg></button>
+  <span class="bar2" id="miniBar"></span>
+</div>
+
+<svg id="glide" aria-hidden="true">
+  <path class="trail" id="trail" d=""/>
+  <g id="plane"><g class="plane" transform="translate(-28 -14)">
+    <path d="M0 13 L56 15 L12 0 Z" fill="#ffffff"/>
+    <path d="M12 0 L20 13 L56 15 Z" fill="#e9e7e1"/>
+    <path d="M0 13 L56 15 L16 28 Z" fill="#d6d3cb"/>
+    <path d="M20 15 L16 28 L26 16 Z" fill="#bdb9af"/>
+  </g></g>
+</svg>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -287,6 +384,118 @@
   /* Reveal */
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .2 });
   document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+  /* White paper plane gliding down the page: it zig-zags with the scroll,
+     its dotted trail stays painted on the page and scrolls away above it */
+  const planeEl = document.getElementById("plane"), trailEl = document.getElementById("trail");
+  const pts = []; let px = innerWidth * .8, py = innerHeight * .18, ang = .3, dir = -1, lastY = scrollY, t0 = performance.now();
+  const target = () => {
+    const max = Math.max(1, document.documentElement.scrollHeight - innerHeight), p = scrollY / max;
+    const w = innerWidth, h = innerHeight, m = Math.min(70, w * .14);
+    return { x: m + (w - 2 * m) * (.5 + .5 * Math.sin(p * Math.PI * 7 + .9)), y: h * (.2 + .12 * Math.sin(p * Math.PI * 13)) };
+  };
+  function glide(now) {
+    const tg = target(), t = (now - t0) / 1000;
+    const bob = reduce ? 0 : Math.sin(t * 1.6) * (4 + (window.__energy || 0) * 10);
+    const nx = px + (tg.x - px) * (reduce ? 1 : .07), ny = py + (tg.y + bob - py) * (reduce ? 1 : .07);
+    const ds = scrollY - lastY; lastY = scrollY;
+    const dx = nx - px, dy = (ny - py) + Math.max(-12, Math.min(12, ds)) * .6; // scrolling down = descending
+    // nose follows the motion, but a paper plane never climbs steeply: clamp the pitch
+    const sp = Math.hypot(dx, dy);
+    if (sp > .25) { if (Math.abs(dx) > .4) dir = Math.sign(dx); }
+    const pitch = sp > .25 ? Math.max(-.35, Math.min(.95, Math.atan2(dy, Math.abs(dx) + .6))) : .18;
+    const want = dir > 0 ? pitch : Math.PI - pitch;
+    let dA = want - ang; dA = Math.atan2(Math.sin(dA), Math.cos(dA));
+    ang += dA * .1;
+    px = nx; py = ny;
+    planeEl.setAttribute("transform", `translate(${px.toFixed(1)} ${py.toFixed(1)}) rotate(${(ang * 180 / Math.PI).toFixed(1)})`);
+    for (const q of pts) q[1] -= ds;
+    pts.push([px - Math.cos(ang) * 26, py - Math.sin(ang) * 26]);
+    while (pts.length > 90 || (pts.length && pts[0][1] < -60)) pts.shift();
+    trailEl.setAttribute("d", pts.length > 1 ? "M" + pts.map(q => q[0].toFixed(1) + " " + q[1].toFixed(1)).join(" L") : "");
+    requestAnimationFrame(glide);
+  }
+  requestAnimationFrame(glide);
+
+  /* EP player: one audio element, the EP as a looping playlist.
+     The level meter comes from the decoded file (no WebAudio routing), so it works in every in-app browser. */
+  const TR = [...document.querySelectorAll(".trk")].map(b => b.querySelector("b").textContent);
+  const audio = document.getElementById("audio"), deck = document.getElementById("deck"), mini = document.getElementById("mini");
+  const seek = document.getElementById("seek"), cur = document.getElementById("cur"), dur = document.getElementById("dur");
+  const lis = [...document.querySelectorAll(".tracks li")], cover = document.querySelector(".release img");
+  const eqs = [...document.querySelectorAll(".eq")].map(e => [...e.children]);
+  let idx = 0, started = false, env = null;
+  const fmt = s => isFinite(s) ? Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0") : "0:00";
+  const setTrack = i => {
+    idx = (i + TR.length) % TR.length;
+    document.getElementById("nowT").textContent = document.getElementById("miniT").textContent = TR[idx];
+    document.getElementById("pos").textContent = (idx + 1) + "/" + TR.length;
+    lis.forEach((li, k) => li.classList.toggle("on", started && k === idx));
+  };
+  const play = () => { started = true; setTrack(idx); audio.play().catch(() => {}); loadEnv(); };
+  const toggle = () => audio.paused ? play() : audio.pause();
+  const jump = i => { setTrack(i); audio.currentTime = 0; play(); };
+  const sync = () => {
+    const on = !audio.paused;
+    [deck, mini].forEach(el => el.classList.toggle("playing", on));
+    document.querySelectorAll(".ply").forEach(b => b.setAttribute("aria-label", on ? "Pause" : "Lecture"));
+    lis.forEach((li, k) => li.classList.toggle("on", started && k === idx));
+    showMini();
+  };
+  audio.addEventListener("play", sync); audio.addEventListener("pause", sync);
+  audio.addEventListener("ended", () => jump(idx + 1)); // whole EP on loop
+  audio.addEventListener("loadedmetadata", () => dur.textContent = fmt(audio.duration));
+  audio.addEventListener("timeupdate", () => {
+    const p = audio.duration ? audio.currentTime / audio.duration : 0;
+    if (!seek.matches(":active")) seek.value = Math.round(p * 1000);
+    seek.style.setProperty("--p", (p * 100).toFixed(1) + "%"); mini.style.setProperty("--p", (p * 100).toFixed(1) + "%");
+    cur.textContent = fmt(audio.currentTime);
+  });
+  seek.addEventListener("input", () => { if (audio.duration) audio.currentTime = seek.value / 1000 * audio.duration; seek.style.setProperty("--p", seek.value / 10 + "%"); });
+  document.getElementById("pp").addEventListener("click", toggle);
+  document.getElementById("miniPP").addEventListener("click", toggle);
+  document.getElementById("prev").addEventListener("click", () => jump(audio.currentTime > 3 ? idx : idx - 1));
+  document.getElementById("next").addEventListener("click", () => jump(idx + 1));
+  document.querySelectorAll(".trk").forEach(b => b.addEventListener("click", () => {
+    const i = +b.dataset.i; if (i === idx && started) toggle(); else jump(i);
+  }));
+  document.getElementById("heroPlay").addEventListener("click", () => { play(); document.getElementById("ep").scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); });
+  document.getElementById("miniGo").addEventListener("click", () => deck.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" }));
+  // mini player: only once music started, and only while the EP deck is off screen
+  let deckVisible = true;
+  new IntersectionObserver(([e]) => { deckVisible = e.isIntersecting; showMini(); }, { threshold: .15 }).observe(deck);
+  function showMini() { const on = started && !deckVisible; mini.classList.toggle("show", on); document.body.classList.toggle("has-mini", on); }
+
+  // loudness envelope (50 frames / s) decoded once from the file
+  function loadEnv() {
+    if (env !== null) return; env = false;
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    fetch(audio.currentSrc || audio.src).then(r => r.arrayBuffer()).then(buf => new Promise((ok, ko) => {
+      const ctx = new AC(); ctx.decodeAudioData(buf, b => { ok(b); ctx.close && ctx.close(); }, ko);
+    })).then(b => {
+      const d = b.getChannelData(0), hop = Math.floor(b.sampleRate / 50), n = Math.floor(d.length / hop), out = new Float32Array(n);
+      let mx = 0;
+      for (let i = 0; i < n; i++) { let s2 = 0; for (let j = i * hop, e = j + hop; j < e; j += 4) s2 += d[j] * d[j]; out[i] = Math.sqrt(s2 / (hop / 4)); if (out[i] > mx) mx = out[i]; }
+      for (let i = 0; i < n; i++) out[i] /= mx || 1;
+      env = out;
+    }).catch(() => {});
+  }
+  let lev = 0;
+  (function meter() {
+    let e = 0;
+    if (!audio.paused) {
+      if (env) { const k = Math.min(env.length - 1, Math.floor(audio.currentTime * 50)); e = env[k]; }
+      else e = .55 + .3 * Math.sin(performance.now() / 140);
+    }
+    lev += (e - lev) * .35; window.__energy = lev;
+    const t = performance.now() / 1000;
+    eqs.forEach(bars => bars.forEach((b, k) => {
+      const h = audio.paused ? .3 : Math.max(.15, Math.min(1, lev * (.65 + .45 * Math.abs(Math.sin(t * (5 + k * 2.3) + k)))));
+      b.style.height = (h * 100).toFixed(0) + "%";
+    }));
+    if (!reduce && cover) cover.style.transform = `scale(${(1 + lev * .045).toFixed(3)})`;
+    requestAnimationFrame(meter);
+  })();
 
   /* Split-flap board */
   const rows = [
@@ -335,11 +544,29 @@
   new IntersectionObserver((es, o) => es.forEach(e => { if (e.isIntersecting) { runFlaps(); o.disconnect(); } }), { threshold: .4 }).observe(board);
 
   /* Shop */
-  const teePic = document.getElementById("teePic");
-  document.querySelectorAll(".side").forEach(b => b.addEventListener("click", () => {
-    document.querySelectorAll(".side").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-    teePic.classList.toggle("back", b.dataset.side === "back");
-  }));
+  // T-shirt image slider: tap the right/left half, the arrows, or swipe
+  const teePic = document.getElementById("teePic"), track = teePic.querySelector(".track");
+  const dots = teePic.querySelectorAll(".dots i"), sideLabel = document.getElementById("sideLabel");
+  const prevB = teePic.querySelector(".prev"), nextB = teePic.querySelector(".next");
+  const names = ["Devant", "Dos"]; let slide = 0;
+  const go = i => {
+    slide = Math.max(0, Math.min(1, i));
+    track.style.transform = `translateX(${-50 * slide}%)`;
+    dots.forEach((d, k) => d.classList.toggle("on", k === slide));
+    sideLabel.textContent = names[slide];
+    prevB.disabled = slide === 0; nextB.disabled = slide === 1;
+  };
+  go(0);
+  let sx = null, swiped = false;
+  teePic.addEventListener("pointerdown", e => { sx = e.clientX; swiped = false; });
+  teePic.addEventListener("pointerup", e => { if (sx !== null && Math.abs(e.clientX - sx) > 30) { swiped = true; go(slide + (e.clientX < sx ? 1 : -1)); } sx = null; });
+  teePic.addEventListener("click", e => {
+    if (swiped) return;
+    if (e.target.closest(".prev")) return go(slide - 1);
+    if (e.target.closest(".next")) return go(slide + 1);
+    const r = teePic.getBoundingClientRect();
+    go(e.clientX > r.left + r.width / 2 ? slide + 1 : slide - 1);
+  });
   const sizes = document.getElementById("sizes");
   sizes.addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; sizes.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", String(x === b))); });
   let count = 0, tt;
