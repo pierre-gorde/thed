@@ -45,7 +45,39 @@ Vidéos : extraits de `bon.mp4` (9 s, live) et `réél_1.mp4` (7 s, live session
 
 Leçon : ne pas coller littéralement à l'EP. Le site doit tenir aux prochaines sorties.
 
+## Choix : Embarquement (23/11, 16h48)
+
+V3 :
+- Avion en papier blanc qui descend avec le scroll, trace en pointillés.
+- Lecteur de l'EP lié à « 01 · L'EP » : on touche un titre, ça joue, l'EP tourne en boucle. Mini-lecteur en bas quand on quitte la section. L'avion et la cover bougent avec le son.
+- T-shirt : slider d'images (devant / dos), options = tailles seulement.
+- Footer : ligne Spotify, Apple Music, Deezer, YouTube.
+
+Son de démo : la live session. En vrai : les 6 MP3 de l'EP (à demander à Théo), hébergés avec le site (~30 Mo, gratuit).
+
+## Dates et Shotgun
+
+- Shotgun n'a pas d'API publique ni de widget (vérifié le 23/11).
+- Shotgun pousse déjà les dates sur Spotify, Bandsintown et Songkick.
+- Option 1 (zéro saisie) : lire les dates depuis l'API Bandsintown. Gratuit. À vérifier : que les dates de Thed y remontent bien.
+- Option 2 : saisie à la main dans Shopify (1 min par date) avec le lien Shotgun. Les dates passées basculent toutes seules.
+
+## Idées waouh (à trier)
+
+Toutes à 0 € de coût récurrent.
+
+| Idée | Effet | Effort |
+| --- | --- | --- |
+| Écran « Touchez pour embarquer » : un tap lance la vidéo **et** la musique (le son est bloqué sans geste sur mobile) | Fort | Faible |
+| Avion à attraper : on le touche, il fait un looping ; le lancer jusqu'en bas débloque un code merch | Fort | Moyen |
+| Paroles synchronisées dans le lecteur, mot à mot | Fort | Moyen (paroles + calage) |
+| Carte à partager en story Insta / TikTok (cover + titre écouté + « j'ai embarqué ») | Fort, viral | Moyen |
+| Ciel qui passe de la nuit à l'aube au fil du scroll, étoiles en bas de page | Moyen | Faible |
+| Tableau des dates : compte à rebours du prochain concert, « COMPLET » qui claque en rouge | Moyen | Faible |
+| T-shirt en 3D qu'on tourne au doigt | Moyen | Moyen |
+| Vibration légère sur les palettes et « Ajouter » (Android) | Faible | Faible |
+
 ## À trancher
 
-- Une direction, ou un mix (ex. : l'intro vidéo + le décollage du 1, puis la DA de nuit du 3).
+- Les idées waouh à garder.
 - À montrer à Théo et Pej une fois le choix fait de notre côté.
