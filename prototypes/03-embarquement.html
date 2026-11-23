@@ -803,7 +803,8 @@
   const loadImg = src => new Promise((ok, ko) => { const i = new Image(); i.onload = () => ok(i); i.onerror = ko; i.src = src; });
   const TEE_FRONT = "M140 40 L100 52 L30 98 L62 170 L100 150 L100 372 L300 372 L300 150 L338 170 L370 98 L300 52 L260 40 C250 70 225 84 200 84 C175 84 150 70 140 40Z";
   const TEE_BACK = "M140 40 L100 52 L30 98 L62 170 L100 150 L100 372 L300 372 L300 150 L338 170 L370 98 L300 52 L260 40 C250 52 225 58 200 58 C175 58 150 52 140 40Z";
-  new IntersectionObserver((es, o) => es.forEach(e => { if (!e.isIntersecting) return; o.disconnect(); initTee3D().catch(() => {}); }), { rootMargin: "600px 0px" }).observe(teePic);
+  // 3D t-shirt switched off (Pierre, 23/11): the image slider stays. initTee3D() is kept below if we want it back.
+  // new IntersectionObserver((es, o) => es.forEach(e => { if (!e.isIntersecting) return; o.disconnect(); initTee3D().catch(() => {}); }), { rootMargin: "600px 0px" }).observe(teePic);
 
   async function initTee3D() {
     const test = document.createElement("canvas");
