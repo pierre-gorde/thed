@@ -565,23 +565,35 @@
      its dotted trail stays painted on the page and scrolls away above it */
   const planeEl = document.getElementById("plane"), trailEl = document.getElementById("trail");
   const pts = []; let px = innerWidth * .8, py = innerHeight * .18, ang = .3, dir = -1, lastY = scrollY, t0 = performance.now();
+  // At the bottom of the page the plane comes down and lands on the line above the platform links
+  const runway = document.querySelector(".end .platforms"), mainEl = document.querySelector("main");
+  let landing = 0;
   const target = () => {
     const max = Math.max(1, document.documentElement.scrollHeight - innerHeight), p = scrollY / max;
     const w = innerWidth, h = innerHeight, m = Math.min(70, w * .14);
-    return { x: m + (w - 2 * m) * (.5 + .5 * Math.sin(p * Math.PI * 7 + .9)), y: h * (.2 + .12 * Math.sin(p * Math.PI * 13)) };
+    const fly = { x: m + (w - 2 * m) * (.5 + .5 * Math.sin(p * Math.PI * 7 + .9)), y: h * (.2 + .12 * Math.sin(p * Math.PI * 13)) };
+    const zone = Math.min(h * .7, 520), rem = mainEl.getBoundingClientRect().bottom - h;
+    landing = runway ? Math.max(0, Math.min(1, 1 - rem / zone)) : 0;
+    if (!landing) return fly;
+    const r = runway.getBoundingClientRect(), e = landing * landing * (3 - 2 * landing);
+    const pad = { x: r.left + r.width * .5 + Math.min(150, r.width * .3), y: r.top - 13 };
+    return { x: fly.x + (pad.x - fly.x) * e, y: fly.y + (pad.y - fly.y) * e };
   };
   function glide(now) {
     const tg = target(), t = (now - t0) / 1000;
     const bob = reduce ? 0 : Math.sin(t * 1.6) * (4 + (window.__energy || 0) * 10);
-    const k = reduce ? 1 : .07;
-    const nx = px + (tg.x - px) * k, ny = py + (tg.y + bob - py) * k;
+    const landed = landing > .985;
+    const k = reduce ? 1 : landed ? .12 : .07;
+    const nx = px + (tg.x - px) * k, ny = py + (tg.y + bob * (1 - landing) - py) * k;
     const ds = scrollY - lastY; lastY = scrollY;
     const dx = nx - px, dy = (ny - py) + Math.max(-12, Math.min(12, ds)) * .6; // scrolling down = descending
     // nose follows the motion, but a paper plane never climbs steeply: clamp the pitch
     const sp = Math.hypot(dx, dy);
-    if (sp > .25) { if (Math.abs(dx) > .4) dir = Math.sign(dx); }
+    if (landing > .6) dir = 1; // touches down nose first, facing right
+    else if (sp > .25) { if (Math.abs(dx) > .4) dir = Math.sign(dx); }
     const pitch = sp > .25 ? Math.max(-.35, Math.min(.95, Math.atan2(dy, Math.abs(dx) + .6))) : .18;
-    const want = dir > 0 ? pitch : Math.PI - pitch;
+    const lp = landed && sp < 1.5 ? 0 : pitch * (1 - landing * .6); // flare: level the nose to touch down
+    const want = dir > 0 ? lp : Math.PI - lp;
     let dA = want - ang; dA = Math.atan2(Math.sin(dA), Math.cos(dA));
     ang += dA * .1;
     px = nx; py = ny;

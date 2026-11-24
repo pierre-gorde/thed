@@ -16,16 +16,11 @@
     --max: 1440px;
     --gutter-l: max(16px, env(safe-area-inset-left, 0px));
     --gutter-r: max(16px, env(safe-area-inset-right, 0px));
-    /* the paper plane cursor (desktop) */
-    --plane: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M2 2 L30 14 L13 16 Z' fill='%23111'/%3E%3Cpath d='M13 16 L30 14 L17 29 Z' fill='%23555'/%3E%3C/g%3E%3C/svg%3E") 2 2;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--fg); font: 400 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-  @media (hover: hover) and (pointer: fine) {
-    body, body * { cursor: var(--plane), auto; }
-    a, button, [role="button"], label { cursor: var(--plane), pointer; }
-  }
   a { color: inherit; }
+  button, [role="button"], label, summary { cursor: pointer; }
   img { max-width: 100%; display: block; }
   .wrap { max-width: var(--max); margin: 0 auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
   @media (min-width: 900px) { :root { --gutter-l: max(40px, env(safe-area-inset-left, 0px)); --gutter-r: max(40px, env(safe-area-inset-right, 0px)); } }
