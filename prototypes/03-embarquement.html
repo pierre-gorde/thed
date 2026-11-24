@@ -179,6 +179,17 @@
   .chip { min-width: 44px; min-height: 40px; padding: 0 10px; border-radius: 10px; background: transparent; border: 1px solid rgba(255,255,255,.3); color: var(--ink); font: 600 14px/1 var(--mono); cursor: pointer; }
   .chip[aria-pressed="true"] { background: var(--ink); color: var(--night); border-color: var(--ink); }
   .prod .btn { width: 100%; }
+  /* Pack: tee + poster side by side; on desktop it spans the whole shelf */
+  .packpic .pk-tee { position: absolute; left: -4%; top: 6%; height: 88%; aspect-ratio: 1 / 1; }
+  .packpic .poster.land { left: 44%; right: 4%; top: 56%; z-index: 1; transform: translateY(-50%) rotate(3deg); }
+  .pp { white-space: nowrap; }
+  .pp s { font-weight: 400; opacity: .5; margin-right: 6px; }
+  @media (min-width: 700px) {
+    .shelf .pack { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: center; }
+    .pack .pic { aspect-ratio: 16 / 10; }
+    .packpic .pk-tee { left: 4%; top: 5%; height: 90%; }
+    .packpic .poster.land { left: 46%; right: 5%; top: 52%; }
+  }
 
   /* Poster: flat / on the wall */
   .duo-view { cursor: pointer; }
@@ -373,6 +384,24 @@
           <p class="pm">Grand format A1 (84 × 59 cm), photo de l'EP. Livré en tube.</p>
           <button class="btn add" type="button" data-name="Poster">Ajouter au panier</button>
         </article>
+        <article class="prod pack">
+          <div class="pic packpic" role="img" aria-label="Pack : le t-shirt PLDV et le poster de l'EP">
+            <div class="pk-tee"><svg viewBox="0 0 400 400" aria-hidden="true"><path d="M140 40 L100 52 L30 98 L62 170 L100 150 L100 372 L300 372 L300 150 L338 170 L370 98 L300 52 L260 40 C250 70 225 84 200 84 C175 84 150 70 140 40Z" fill="#f7f5ef"/></svg><img class="print front" src="assets/tee-devant.png" alt=""></div>
+            <div class="poster land"><picture><source srcset="assets/poster.webp" type="image/webp"><img src="assets/poster.jpg" width="1600" height="1133" loading="lazy" alt=""></picture></div>
+            <span class="tag">Pack · −5 €</span>
+          </div>
+          <div class="pbody">
+            <div class="prow"><h3 class="pn">Pack t-shirt + poster</h3><span class="pp"><s>50 €</s> 45 €</span></div>
+            <p class="pm">Le t-shirt PLDV et le poster A1 de l'EP, ensemble. Le cadeau parfait.</p>
+            <div class="chips" role="group" aria-label="Taille du t-shirt">
+              <button class="chip" type="button" aria-pressed="false">S</button>
+              <button class="chip" type="button" aria-pressed="true">M</button>
+              <button class="chip" type="button" aria-pressed="false">L</button>
+              <button class="chip" type="button" aria-pressed="false">XL</button>
+            </div>
+            <button class="btn add" type="button" data-name="Pack t-shirt + poster">Ajouter au panier</button>
+          </div>
+        </article>
       </div>
     </div>
   </section>
@@ -565,23 +594,35 @@
      its dotted trail stays painted on the page and scrolls away above it */
   const planeEl = document.getElementById("plane"), trailEl = document.getElementById("trail");
   const pts = []; let px = innerWidth * .8, py = innerHeight * .18, ang = .3, dir = -1, lastY = scrollY, t0 = performance.now();
+  // At the bottom of the page the plane comes down and lands on the line above the platform links
+  const runway = document.querySelector(".end .platforms"), mainEl = document.querySelector("main");
+  let landing = 0;
   const target = () => {
     const max = Math.max(1, document.documentElement.scrollHeight - innerHeight), p = scrollY / max;
     const w = innerWidth, h = innerHeight, m = Math.min(70, w * .14);
-    return { x: m + (w - 2 * m) * (.5 + .5 * Math.sin(p * Math.PI * 7 + .9)), y: h * (.2 + .12 * Math.sin(p * Math.PI * 13)) };
+    const fly = { x: m + (w - 2 * m) * (.5 + .5 * Math.sin(p * Math.PI * 7 + .9)), y: h * (.2 + .12 * Math.sin(p * Math.PI * 13)) };
+    const zone = Math.min(h * .7, 520), rem = mainEl.getBoundingClientRect().bottom - h;
+    landing = runway ? Math.max(0, Math.min(1, 1 - rem / zone)) : 0;
+    if (!landing) return fly;
+    const r = runway.getBoundingClientRect(), e = landing * landing * (3 - 2 * landing);
+    const pad = { x: r.left + r.width * .5 + Math.min(150, r.width * .3), y: r.top - 13 };
+    return { x: fly.x + (pad.x - fly.x) * e, y: fly.y + (pad.y - fly.y) * e };
   };
   function glide(now) {
     const tg = target(), t = (now - t0) / 1000;
     const bob = reduce ? 0 : Math.sin(t * 1.6) * (4 + (window.__energy || 0) * 10);
-    const k = reduce ? 1 : .07;
-    const nx = px + (tg.x - px) * k, ny = py + (tg.y + bob - py) * k;
+    const landed = landing > .985;
+    const k = reduce ? 1 : landed ? .12 : .07;
+    const nx = px + (tg.x - px) * k, ny = py + (tg.y + bob * (1 - landing) - py) * k;
     const ds = scrollY - lastY; lastY = scrollY;
     const dx = nx - px, dy = (ny - py) + Math.max(-12, Math.min(12, ds)) * .6; // scrolling down = descending
     // nose follows the motion, but a paper plane never climbs steeply: clamp the pitch
     const sp = Math.hypot(dx, dy);
-    if (sp > .25) { if (Math.abs(dx) > .4) dir = Math.sign(dx); }
+    if (landing > .6) dir = 1; // touches down nose first, facing right
+    else if (sp > .25) { if (Math.abs(dx) > .4) dir = Math.sign(dx); }
     const pitch = sp > .25 ? Math.max(-.35, Math.min(.95, Math.atan2(dy, Math.abs(dx) + .6))) : .18;
-    const want = dir > 0 ? pitch : Math.PI - pitch;
+    const lp = landed && sp < 1.5 ? 0 : pitch * (1 - landing * .6); // flare: level the nose to touch down
+    const want = dir > 0 ? lp : Math.PI - lp;
     let dA = want - ang; dA = Math.atan2(Math.sin(dA), Math.cos(dA));
     ang += dA * .1;
     px = nx; py = ny;
@@ -921,8 +962,7 @@
   posterPic.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flipPoster(); } });
   posterPic.addEventListener("mouseenter", () => posterLabel.textContent = "Au mur");
   posterPic.addEventListener("mouseleave", () => posterLabel.textContent = posterPic.classList.contains("alt") ? "Au mur" : "À plat");
-  const sizes = document.getElementById("sizes");
-  sizes.addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; sizes.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", String(x === b))); });
+  document.querySelectorAll(".chips").forEach(sizes => sizes.addEventListener("click", e => { const b = e.target.closest(".chip"); if (!b) return; sizes.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", String(x === b))); }));
   let count = 0, tt;
   const bag = document.getElementById("bag"), countEl = document.getElementById("count"), toast = document.getElementById("toast");
   function say(m) { toast.textContent = m; toast.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => toast.classList.remove("show"), 2600); }
