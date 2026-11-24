@@ -179,6 +179,10 @@
   .chip { min-width: 44px; min-height: 40px; padding: 0 10px; border-radius: 10px; background: transparent; border: 1px solid rgba(255,255,255,.3); color: var(--ink); font: 600 14px/1 var(--mono); cursor: pointer; }
   .chip[aria-pressed="true"] { background: var(--ink); color: var(--night); border-color: var(--ink); }
   .prod .btn { width: 100%; }
+  /* "Ajouter au panier" sits at the bottom of every card, on the same line */
+  .prod, .pbody { display: flex; flex-direction: column; }
+  .pbody { flex: 1; }
+  .prod .btn.add { margin-top: auto; }
   /* Pack: tee + poster side by side; on desktop it spans the whole shelf */
   .packpic .pk-tee { position: absolute; left: -4%; top: 6%; height: 88%; aspect-ratio: 1 / 1; }
   .packpic .poster.land { left: 44%; right: 4%; top: 56%; z-index: 1; transform: translateY(-50%) rotate(3deg); }
@@ -187,6 +191,7 @@
   @media (min-width: 700px) {
     .shelf .pack { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 28px; align-items: center; }
     .pack .pic { aspect-ratio: 16 / 10; }
+    .shelf .pack .pbody { align-self: stretch; padding-top: 6px; }
     .packpic .pk-tee { left: 4%; top: 5%; height: 90%; }
     .packpic .poster.land { left: 46%; right: 5%; top: 52%; }
   }
