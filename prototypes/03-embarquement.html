@@ -565,13 +565,7 @@
      its dotted trail stays painted on the page and scrolls away above it */
   const planeEl = document.getElementById("plane"), trailEl = document.getElementById("trail");
   const pts = []; let px = innerWidth * .8, py = innerHeight * .18, ang = .3, dir = -1, lastY = scrollY, t0 = performance.now();
-  // On desktop the plane follows the mouse (Pej: "the plane as the cursor"), and goes back to gliding when the mouse rests
-  const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
-  let mx = 0, my = 0, mouseAt = -1e9;
-  if (finePointer) addEventListener("mousemove", e => { mx = e.clientX; my = e.clientY; mouseAt = performance.now(); }, { passive: true });
-  const following = () => finePointer && performance.now() - mouseAt < 2500;
   const target = () => {
-    if (following()) return { x: mx + 34, y: my + 26 };
     const max = Math.max(1, document.documentElement.scrollHeight - innerHeight), p = scrollY / max;
     const w = innerWidth, h = innerHeight, m = Math.min(70, w * .14);
     return { x: m + (w - 2 * m) * (.5 + .5 * Math.sin(p * Math.PI * 7 + .9)), y: h * (.2 + .12 * Math.sin(p * Math.PI * 13)) };
@@ -579,8 +573,8 @@
   function glide(now) {
     const tg = target(), t = (now - t0) / 1000;
     const bob = reduce ? 0 : Math.sin(t * 1.6) * (4 + (window.__energy || 0) * 10);
-    const k = reduce ? 1 : following() ? .14 : .07, b2 = following() ? bob * .3 : bob;
-    const nx = px + (tg.x - px) * k, ny = py + (tg.y + b2 - py) * k;
+    const k = reduce ? 1 : .07;
+    const nx = px + (tg.x - px) * k, ny = py + (tg.y + bob - py) * k;
     const ds = scrollY - lastY; lastY = scrollY;
     const dx = nx - px, dy = (ny - py) + Math.max(-12, Math.min(12, ds)) * .6; // scrolling down = descending
     // nose follows the motion, but a paper plane never climbs steeply: clamp the pitch
