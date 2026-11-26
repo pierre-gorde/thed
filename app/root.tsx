@@ -17,7 +17,6 @@ import { AnnouncementBar } from "~/components/AnnouncementBar";
 import { CartDrawer } from "~/components/CartDrawer";
 import { Footer } from "~/components/Footer";
 import { Header } from "~/components/Header";
-import { SearchDrawer } from "~/components/SearchDrawer";
 import { CartProvider } from "~/lib/cart";
 import { cartHandlers } from "~/lib/cart-handlers";
 import { useNonce } from "~/lib/csp";
@@ -28,14 +27,17 @@ import { loadRootLayout } from "~/lib/root-layout";
 import { routeTemplates } from "~/lib/route-templates";
 import { createEphemeralSessionManager } from "~/lib/session";
 import { analyticsConsent, resolveShopIdentity } from "~/lib/shop";
+import { getLatestRelease } from "~/lib/thed-server";
 import { createRequestStorefrontClient, storefrontClientContext } from "~/lib/storefront";
 
 import type { Route } from "./+types/root";
 
 import appStylesHref from "./app.css?url";
+import thedStylesHref from "./styles/thed.css?url";
 
 export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: appStylesHref },
+  { rel: "stylesheet", href: thedStylesHref },
   { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
 ];
 
@@ -90,9 +92,10 @@ export const middleware: Route.MiddlewareFunction[] = [
 export async function loader({ context, request }: Route.LoaderArgs) {
   const env = context.get(envContext);
   const storefrontClient = context.get(storefrontClientContext);
-  const [cartResult, layout] = await Promise.all([
+  const [cartResult, layout, release] = await Promise.all([
     cartHandlers.get({ storefrontClient, request }),
     loadRootLayout(storefrontClient),
+    getLatestRelease({ cache: context.cache, waitUntil: context.waitUntil }),
   ]);
 
   return {
@@ -101,6 +104,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     shopIdentity: resolveShopIdentity(env, layout.shopId),
     currency: layout.currency,
     locale: storefrontClient.locale,
+    release,
   };
 }
 
@@ -111,10 +115,11 @@ export function Layout({ children }: { children: ReactNode }) {
   const rootData = useRouteLoaderData<typeof loader>("root");
 
   return (
-    <html lang="en">
+    <html lang="fr">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta name="theme-color" content="#000000" />
         {rootData ? (
           <ShopifyScripts
             nonce={nonce}
@@ -130,12 +135,12 @@ export function Layout({ children }: { children: ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="bg-surface text-on-surface font-body flex min-h-svh flex-col antialiased">
+      <body className="t-body">
         <a
           href="#main-content"
           className="focus-visible:bg-interactive focus-visible:text-interactive-text sr-only focus-visible:not-sr-only focus-visible:fixed focus-visible:start-4 focus-visible:top-4 focus-visible:z-50 focus-visible:rounded focus-visible:px-4 focus-visible:py-2"
         >
-          Skip to content
+          Aller au contenu
         </a>
         {children}
         <ScrollRestoration nonce={nonce} />
@@ -150,38 +155,35 @@ export default function App({ loaderData }: Route.ComponentProps) {
     <CartProvider initialData={loaderData.cartData}>
       <PageViewedTracker />
       <CartAnalyticsTracker />
-      <AnnouncementBar />
-      <Header shopInfo={loaderData.shopInfo} />
+      <AnnouncementBar release={loaderData.release} />
+      <Header />
       <Outlet />
-      <Footer shopInfo={loaderData.shopInfo} />
+      <Footer />
       <CartDrawer />
-      <SearchDrawer />
     </CartProvider>
   );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
+  let message = "Oups";
+  let details = "Une erreur inattendue s'est produite.";
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404 ? "The requested page could not be found." : error.statusText || details;
+    message = error.status === 404 ? "404" : "Erreur";
+    details = error.status === 404 ? "Cette page n'existe pas." : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;
   }
 
   return (
-    <main
-      id="main-content"
-      tabIndex={-1}
-      className="max-w-page px-margin mx-auto w-full flex-1 py-12"
-    >
-      <h1 className="type-display text-on-surface">{message}</h1>
-      <p className="text-on-surface-secondary mt-4">{details}</p>
+    <main id="main-content" tabIndex={-1} className="t-main t-wrap t-page">
+      <h1>{message}</h1>
+      <p className="t-desc">{details}</p>
+      <a className="t-btn" href="/">
+        Retour à l'accueil
+      </a>
       {stack ? (
         <pre className="border-border mt-6 w-full overflow-x-auto rounded border p-4 text-sm">
           <code>{stack}</code>

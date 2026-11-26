@@ -6,6 +6,7 @@ export default [
   route("collections", "routes/collections.tsx"),
   route("collections/:handle", "routes/collection.tsx"),
   route("cart", "routes/cart.tsx"),
+  route("policies/:handle", "routes/policy.tsx"),
   route("search", "routes/search.tsx"),
   route("account", "routes/account.tsx"),
   route("robots.txt", "routes/robots.ts"),

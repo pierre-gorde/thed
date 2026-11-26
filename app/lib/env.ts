@@ -1,6 +1,8 @@
 import { createContext } from "react-router";
 
 export type Env = {
+  /** Clé Bandsintown for Artists (concerts). Sans elle : dates de démo. */
+  BANDSINTOWN_APP_ID?: string;
   MOCK_SHOP?: string;
   PRIVATE_STOREFRONT_API_TOKEN?: string;
   PUBLIC_CHECKOUT_DOMAIN?: string;

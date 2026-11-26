@@ -1,10 +1,10 @@
-import { ShopPayButton } from "@shopify/hydrogen/react";
 import { useEffect, useMemo, useState, type SubmitEvent } from "react";
 import { Link } from "react-router";
 
 import { useCart, useCartForm } from "~/lib/cart";
 import { closeCartDrawer, configureOpenCartAction, CART_DRAWER_ID } from "~/lib/cart-drawer";
 import { formatPrice } from "~/lib/money";
+import { shortPrice } from "~/lib/thed-data";
 
 import { publishCartViewed } from "./AnalyticsTrackers";
 
@@ -19,23 +19,13 @@ function CartErrorBanner() {
   if (messages.length === 0 || errors.lastUpdatedAt <= dismissedAt) return null;
 
   return (
-    <div className="border-border bg-surface-secondary mx-4 mb-2 rounded p-3 text-sm" role="alert">
-      <div className="flex items-start justify-between gap-3">
-        <div className="grid gap-1">
-          {messages.map((message) => (
-            <p key={message} className="text-critical">
-              {message}
-            </p>
-          ))}
-        </div>
-        <button
-          type="button"
-          className="button-ghost focus-visible:outline-accent rounded px-2 py-1 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          onClick={() => setDismissedAt(errors.lastUpdatedAt)}
-        >
-          Dismiss
-        </button>
-      </div>
+    <div className="t-errors" role="alert">
+      {messages.map((message) => (
+        <p key={message}>{message}</p>
+      ))}
+      <button type="button" className="t-remove" onClick={() => setDismissedAt(errors.lastUpdatedAt)}>
+        Fermer
+      </button>
     </div>
   );
 }
@@ -59,8 +49,8 @@ function useCartStatusMessage(): string {
     if (isPending) setSawPending(true);
   }, [isPending]);
 
-  if (isPending) return "Updating cart totals";
-  if (sawPending && networkErrors.length === 0) return "Cart totals updated";
+  if (isPending) return "Mise à jour du panier";
+  if (sawPending && networkErrors.length === 0) return "Panier mis à jour";
   return "";
 }
 
@@ -90,13 +80,14 @@ export function CartLineItem({
   const merchandise = line.merchandise;
   const product = merchandise?.product;
   const pending = pendingLines.has(line.id);
+  const title = product?.title ?? merchandise?.title ?? "Article";
   const optionText = merchandise?.selectedOptions
-    ?.map((option: { name: string; value: string }) => option.value)
+    ?.filter((option) => option.value !== "Default Title")
+    .map((option) => `${option.name === "Size" || option.name === "Taille" ? "Taille " : ""}${option.value}`)
     .join(" / ");
   const errorId = `cart-line-error-${line.id.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
 
-  // Removing a line unmounts the control that holds focus. Move focus to the same
-  // control on a neighbouring line (or `emptyCartFocusId`) while the line still exists.
+  // Supprimer une ligne démonte le bouton qui a le focus : on le déplace avant sur la ligne voisine.
   const moveFocusBeforeRemoval = (event: SubmitEvent<HTMLFormElement>) => {
     const form = event.currentTarget;
     if (!form.contains(document.activeElement)) return;
@@ -118,87 +109,54 @@ export function CartLineItem({
 
   return (
     <li
-      className={`flex gap-3 py-4 transition-opacity ${pending ? "opacity-60" : ""}`}
+      className={`t-line ${pending ? "t-pending" : ""}`}
       data-testid="cart-line"
       {...(pending ? { "aria-busy": "true" } : {})}
     >
-      <div className="bg-surface-secondary size-20 shrink-0 overflow-hidden">
+      <div className="t-media">
         {merchandise?.image ? (
-          <img
-            src={merchandise.image.url}
-            alt={merchandise.image.altText ?? product?.title ?? merchandise.title ?? ""}
-            className="h-full w-full object-cover"
-            loading="lazy"
-          />
+          <img src={merchandise.image.url} alt={merchandise.image.altText ?? title} loading="lazy" />
         ) : null}
       </div>
-      <div className="min-w-0 flex-1">
-        <p className="type-body-sm text-on-surface font-medium">
+      <div>
+        <b>
           {product?.handle ? (
-            <Link to={`/products/${product.handle}`} className="text-on-surface no-underline">
-              {product.title ?? merchandise?.title ?? "Product"}
+            <Link to={`/products/${product.handle}`} onClick={() => closeCartDrawer()}>
+              {title}
             </Link>
           ) : (
-            (product?.title ?? merchandise?.title ?? "Product")
+            title
           )}
-        </p>
-        {optionText ? <p className="text-on-surface-secondary mt-1 text-xs">{optionText}</p> : null}
-        {line.attributes
-          ?.filter((attr) => !attr.key.startsWith("_") && attr.value != null)
-          .map((attr) => (
-            <p key={attr.key} className="text-on-surface-secondary mt-1 text-xs italic">
-              {attr.key}: {attr.value}
-            </p>
-          ))}
-        <p className={`text-on-surface mt-2 text-sm ${pending ? "opacity-50" : ""}`}>
-          {formatPrice(line.cost.totalAmount)}
-        </p>
-        <form
-          {...formProps({ beforeSubmit: moveFocusBeforeRemoval })}
-          className="mt-3 flex items-center gap-2"
-        >
+        </b>
+        {optionText ? <span className="t-meta">{optionText}</span> : null}
+        <form {...formProps({ beforeSubmit: moveFocusBeforeRemoval })}>
           <button {...register("set")} />
           <input type="hidden" {...register("lineId", { value: line.id })} />
-          <div className="quantity-selector-outlined rounded-input inline-flex items-center">
-            <button
-              type="submit"
-              {...register("decrease")}
-              className="text-on-surface-secondary hover:text-on-surface inline-flex size-11 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50 motion-safe:transition-[color,transform] motion-safe:active:scale-[0.90]"
-              aria-label={`Decrease quantity for ${product?.title ?? merchandise?.title ?? "item"}`}
-            >
-              <img src="/icons/icon-minus.svg" alt="" className="size-4" aria-hidden="true" />
+          <span className="t-qty">
+            <button type="submit" {...register("decrease")} aria-label={`Retirer un ${title}`}>
+              −
             </button>
             <input
               {...register("quantity", { value: line.quantity, interactive: true })}
-              className={`number-reset text-on-surface h-11 w-12 rounded-none border-0 bg-transparent p-0 text-center text-sm ${pending ? "opacity-50" : ""}`}
-              aria-label="Quantity"
+              aria-label="Quantité"
               aria-describedby={lineError?.userErrors.length ? errorId : undefined}
               aria-invalid={lineError?.userErrors.length ? true : undefined}
             />
-            <button
-              type="submit"
-              {...register("increase")}
-              className="text-on-surface-secondary hover:text-on-surface inline-flex size-11 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50 motion-safe:transition-[color,transform] motion-safe:active:scale-[0.90]"
-              aria-label={`Increase quantity for ${product?.title ?? merchandise?.title ?? "item"}`}
-            >
-              <img src="/icons/icon-plus.svg" alt="" className="size-4" aria-hidden="true" />
+            <button type="submit" {...register("increase")} aria-label={`Ajouter un ${title}`}>
+              +
             </button>
-          </div>
-          <button
-            type="submit"
-            {...register("remove")}
-            className="text-on-surface-secondary hover:text-on-surface inline-flex size-11 items-center justify-center rounded motion-safe:transition-[color,transform] motion-safe:active:scale-[0.90]"
-            aria-label={`Remove ${product?.title ?? merchandise?.title ?? "item"}`}
-          >
-            <img src="/icons/icon-trash.svg" alt="" className="size-5" aria-hidden="true" />
+          </span>
+          <button type="submit" {...register("remove")} className="t-remove">
+            Supprimer
           </button>
         </form>
         {lineError?.userErrors.length ? (
-          <p id={errorId} className="text-critical mt-2 text-sm" role="alert">
+          <p id={errorId} className="t-errors" role="alert">
             {lineError.userErrors[0]?.message}
           </p>
         ) : null}
       </div>
+      <span>{shortPrice(formatPrice(line.cost.totalAmount))}</span>
     </li>
   );
 }
@@ -207,23 +165,11 @@ function CartLines() {
   const loading = useCart((state) => state.loading);
   const lines = useCart((state) => state.data.lines.nodes);
 
-  if (loading) {
-    return <p className="text-on-surface-secondary type-body-sm">Loading cart…</p>;
-  }
-
-  if (lines.length === 0) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center text-center">
-        <p className="text-on-surface font-medium">Your cart is empty.</p>
-        <p className="text-on-surface-secondary mt-2 text-sm">
-          Looks like you haven&apos;t added anything to your cart yet.
-        </p>
-      </div>
-    );
-  }
+  if (loading) return <p className="t-empty">Chargement du panier…</p>;
+  if (lines.length === 0) return <p className="t-empty">Ton panier est vide.</p>;
 
   return (
-    <ul role="list" className="divide-border -mt-4 divide-y">
+    <ul className="t-lines">
       {lines.map((line) => (
         <CartLineItem key={line.id} line={line} emptyCartFocusId="cart-drawer-title" />
       ))}
@@ -238,43 +184,25 @@ function CartFooter() {
   const hasLines = cart.lines.nodes.length > 0;
   const isPending = hasPendingCost(pending) || revalidating;
 
-  if (!hasLines) return null;
+  if (!hasLines) return <div />;
 
   return (
-    <div className="border-border shrink-0 border-t p-4">
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between" aria-busy={isPending}>
-          <span className="text-on-surface text-sm font-medium">
-            Estimated total
-            {isPending ? <span aria-hidden="true"> (updating)</span> : null}
-          </span>
-          <span
-            className={`text-on-surface text-base font-medium ${isPending ? "text-on-surface-secondary" : ""}`}
-          >
-            {formatPrice(cart.cost.totalAmount)}
-          </span>
-        </div>
-        <p className="text-on-surface-secondary text-xs">
-          Taxes and shipping calculated at checkout
-        </p>
-        {cart.checkoutUrl ? (
-          <>
-            <ShopPayButton width="100%" borderRadius="8px" />
-            <a
-              href={cart.checkoutUrl}
-              className="rounded-button button-primary focus-visible:outline-accent inline-flex h-11 w-full items-center justify-center gap-2 px-4 text-sm font-medium no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-safe:transition-[color,background-color,border-color,transform] motion-safe:active:scale-[0.97]"
-            >
-              Checkout
-            </a>
-          </>
-        ) : null}
+    <div className="t-tot">
+      <div className="t-row" aria-busy={isPending}>
+        <span>Sous-total</span>
+        <span>{shortPrice(formatPrice(cart.cost.subtotalAmount ?? cart.cost.totalAmount))}</span>
       </div>
+      <p className="t-small">Livraison calculée au paiement.</p>
+      {cart.checkoutUrl ? (
+        <a href={cart.checkoutUrl} className="t-btn t-full">
+          Paiement
+        </a>
+      ) : null}
     </div>
   );
 }
 
 export function CartDrawer() {
-  const totalQuantity = useCart((state) => state.data.totalQuantity);
   const cart = useCart((state) => state.data);
   const statusMessage = useCartStatusMessage();
 
@@ -291,51 +219,34 @@ export function CartDrawer() {
 
   return (
     <>
-      <span
-        role="status"
-        className="sr-only"
-        aria-live="polite"
-        aria-atomic="true"
-        data-cart-status
-      >
+      <span role="status" className="t-sr" aria-live="polite" aria-atomic="true" data-cart-status>
         {statusMessage}
       </span>
       <dialog
         id={CART_DRAWER_ID}
-        className="drawer-right bg-surface text-on-surface"
+        className="t-drawer"
         aria-labelledby="cart-drawer-title"
         data-testid="cart-drawer"
         closedby="any"
       >
-        <div className="flex h-full flex-col">
-          <div className="flex shrink-0 items-center py-2 ps-4">
-            <div className="flex flex-1 items-center gap-2">
-              <h2
-                id="cart-drawer-title"
-                tabIndex={-1}
-                className="text-on-surface text-lg font-medium"
-              >
-                Cart
-              </h2>
-              <span className="cart-count-badge">{totalQuantity}</span>
-            </div>
-            <button
-              type="button"
-              commandfor={CART_DRAWER_ID}
-              command="close"
-              className="button-icon focus-visible:outline-accent inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-safe:transition-[color,background-color,border-color,transform] motion-safe:active:scale-[0.97]"
-              aria-label="Close"
-              onClick={() => closeCartDrawer()}
-            >
-              <img src="/icons/icon-x.svg" alt="" className="size-5" aria-hidden="true" />
-            </button>
-          </div>
-          <CartErrorBanner />
-          <div className="flex-1 overflow-y-auto p-4">
-            <CartLines />
-          </div>
-          <CartFooter />
+        <div>
+          <h2 id="cart-drawer-title" tabIndex={-1}>
+            Panier
+          </h2>
+          <button
+            type="button"
+            commandfor={CART_DRAWER_ID}
+            command="close"
+            className="t-x"
+            aria-label="Fermer"
+            onClick={() => closeCartDrawer()}
+          >
+            ×
+          </button>
         </div>
+        <CartErrorBanner />
+        <CartLines />
+        <CartFooter />
       </dialog>
     </>
   );
