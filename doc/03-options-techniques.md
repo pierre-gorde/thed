@@ -1,6 +1,8 @@
 # 03 — Options techniques compatibles Spotify
 
 > Relevé le 23/11/2026. Seules les options qui gardent le merch sur la fiche Spotify sont listées.
+>
+> **Mise à jour 26/11/2026** : Shopify headless retenu (option B). Depuis Hydrogen 2026-10 (14/10/2026), Hydrogen marche aussi avec Next.js : B et C ne s'opposent plus. Archi finale et boutique de dev gratuite : voir [08](./08-plan-production.md).
 
 ## La règle de base
 
