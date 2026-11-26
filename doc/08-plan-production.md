@@ -26,20 +26,28 @@ Le doc de cadrage opposait Next.js et Hydrogen. Ce n'est plus un choix exclusif 
 | --- | --- | --- | --- | --- |
 | 1 | Framework | **Hydrogen 2026-10, starter React Router**, TypeScript | Hydrogen 2026-10, starter Next.js | 0 € dans les deux cas |
 | 2 | Hébergement | **Oxygen** (inclus dans Shopify, previews par branche) | Next.js sur Vercel Pro, Netlify ou Cloudflare (Oxygen + Next.js non confirmé) | 0 € / Vercel Pro 20 $/mois |
-| 3 | Boutique pendant le dev | **Boutique « client transfer » gratuite** (Dev Dashboard), transférée à THED PRODUCTION au lancement | Ouvrir tout de suite la vraie boutique en essai | 0 € jusqu'au lancement / 1 €/mois 3 mois puis 27 €/mois |
+| 3 | Boutique | **Dev sur une boutique de dev gratuite**, puis **vraie boutique créée au nom de l'asso juste avant le lancement** (offre 1 €/mois pendant 3 mois) | Créer la boutique de l'asso dès maintenant | 0 € pendant le dev, puis 3 × 1 €, puis 27 €/mois |
 | 4 | Contenus modifiables (bandeau d'annonce, vidéo d'intro, lien live session) | **Metaobjects Shopify** : tout se modifie dans l'admin Shopify | En dur dans le code | 0 € |
 | 5 | Vidéos et photos | **Fichiers Shopify** (CDN inclus, modifiables par eux) | Dans le repo | 0 € |
-| 6 | Dernière sortie | **Spotify si Pierre a Premium**, sinon Apple + lien vers la page Spotify | — | 0 € |
+| 6 | Dernière sortie | **Apple** (sans clé, sans compte) + lien vers la page Spotify. Passage à Spotify plus tard si Théo a Premium | Spotify tout de suite (Théo crée l'app) | 0 € |
 | 7 | Animations | CSS + **GSAP** (gratuit, plugins compris). Pas de 3D au départ | — | 0 € |
-| 8 | Domaine | À choisir, acheté par Pierre puis transféré | — | ~10-15 €/an |
+| 8 | Domaine | **Pas de domaine au départ** : URL Oxygen gratuite rendue publique, lien dans la bio Insta. Pas de travail SEO (sans `noindex`) | Acheter un domaine | 0 € / ~10-15 €/an |
 
 ### Pourquoi ces recos
 
 1-2. **React Router sur Oxygen** : la voie native de Shopify, hébergement gratuit déjà payé par le plan Basic, previews par PR, zéro compte en plus à gérer. La maquette n'a pas de 3D, donc l'argument React Three Fiber de Next.js ne pèse plus. Next.js reste possible si Pierre le préfère pour le confort, mais l'hébergement devient une question (Oxygen + Next.js non documenté, Vercel Hobby interdit l'usage commercial).
 
-3. **Client transfer store** : gratuite pendant tout le dev, avec presque toutes les fonctions Shopify ; commandes de test illimitées. Au lancement, on la transfère au compte de l'asso, qui choisit Basic à ce moment-là ([Shopify](https://shopify.dev/docs/apps/build/stores/client-transfer-stores)). Limites : pas de vrai paiement, page mot de passe obligatoire, apps gratuites seulement, et plus d'essai gratuit après transfert (donc pas de 1 €/mois pendant 3 mois, environ 78 € de remise perdus). Ça reste 0 € tant que le site n'est pas en ligne.
+3. **Boutique de dev, puis boutique de l'asso au lancement** (décision Pierre, 26/11) :
+   - Pendant le dev : boutique de dev gratuite (Dev Dashboard de Pierre). Oxygen y marche, previews derrière connexion à la boutique.
+   - Juste avant le lancement : Pierre crée la vraie boutique au nom de THED PRODUCTION (documents de l'asso à prévoir). Elle profite de l'offre d'arrivée (3 jours gratuits, puis 1 €/mois pendant 3 mois sur Basic, relevé le 23/11). On y importe le catalogue (CSV produits + metaobjects, ~1-2 h) et on y rebranche le storefront.
+   - Pourquoi pas tout de suite : l'offre à 1 € s'écoulerait pendant le dev. Et pendant l'essai gratuit de 3 jours, Oxygen ne permet aucun environnement public ([doc Shopify](https://shopify.dev/docs/storefronts/headless/legacy/hydrogen/fundamentals)) : le site ne peut être public qu'une fois le plan Basic choisi.
+   - Écarté : la boutique « client transfer », qui perd l'offre d'arrivée au transfert.
 
 4-5. **Tout dans Shopify** : Théo et Pej n'ont qu'un seul back-office (produits, stock, photos, textes). Les dates viennent de Bandsintown, rien à saisir.
+
+6. **Apple d'abord** : aucune clé, aucune démarche. La clé Spotify exige que l'app soit créée par un compte Spotify **auditeur** Premium (developer.spotify.com), pas par le compte Spotify for Artists. Si Théo a Premium, il crée l'app en 5 min et on bascule.
+
+8. **Sans domaine** : sur Basic, Oxygen autorise 1 environnement public, avec une URL générée automatiquement (longue, format à confirmer). Suffit pour un lien en bio. Le checkout reste sur `{boutique}.myshopify.com`. Un domaine peut s'ajouter plus tard sans rien recoder (il faudra juste changer le lien Insta).
 
 ## Archi en une image
 
@@ -47,12 +55,12 @@ Le doc de cadrage opposait Next.js et Hydrogen. Ce n'est plus un choix exclusif 
 Fan (Insta / TikTok / Spotify)
   │
   ▼
-thed.xx  ── Hydrogen 2026-10 (React Router) sur Oxygen
+URL Oxygen (domaine plus tard) ── Hydrogen 2026-10 (React Router) sur Oxygen
   │          ├─ Storefront API : produits, photos, stock, panier, metaobjects
   │          ├─ Bandsintown (serveur, cache 1 h) : concerts
   │          └─ Spotify ou Apple (serveur, cache 1 h) : dernière sortie
   ▼
-checkout.thed.xx ── Checkout Shopify (paiement, livraison, e-mails)
+{boutique}.myshopify.com ── Checkout Shopify (paiement, livraison, e-mails)
                      └─ Commandes → app Shopify sur le téléphone de Théo / Pej
 Spotify (onglet Merch) ── canal Spotify dans Shopify → liens vers /products/…
 ```
@@ -65,23 +73,28 @@ Spotify (onglet Merch) ── canal Spotify dans Shopify → liens vers /product
 
 | Étape | Contenu | Qui |
 | --- | --- | --- |
-| 0. Setup | Compte Dev Dashboard, boutique client transfer, canal Hydrogen, lien repo ↔ Oxygen, projet Hydrogen 2026-10 dans le repo, CI (lint, types, build) | Pierre (comptes) + Claude (code) |
+| 0. Setup | Compte Dev Dashboard, boutique de dev, canal Hydrogen, lien repo ↔ Oxygen, projet Hydrogen 2026-10 dans le repo, CI (lint, types, build) | Pierre (comptes) + Claude (code) |
 | 1. Catalogue | T-shirt (S/M/L/XL, 90 pièces), poster A1 (200), photos, prix provisoires, metaobjects « Réglages du site » | Claude, photos de Pej |
 | 2. Front | Portage de la maquette : accueil, fiche produit, panier en tiroir, concerts Bandsintown, dernière sortie, live session, pages légales | Claude |
 | 3. Checkout | Livraison France (Colissimo / Mondial Relay), retrait en main propre, « expédié sous 7 jours », CGV, mentions légales, « TVA non applicable » à valider | Claude + Pierre |
 | 4. Recette | Tests sur vrais téléphones depuis Insta et TikTok, perf, accessibilité, commandes de test de bout en bout | Pierre + Claude |
-| 5. Lancement | Domaine, transfert de la boutique à l'asso → plan Basic, Shopify Payments, canal Spotify + Spotify for Artists, clé Bandsintown, thème de redirection, Shopify POS pour le stand | Pierre + Théo/Pej |
+| 5. Lancement | Boutique de l'asso créée (Basic à 1 €/mois 3 mois), import du catalogue, URL Oxygen publique, Shopify Payments, canal Spotify + Spotify for Artists, clé Bandsintown, thème de redirection, Shopify POS pour le stand | Pierre + Théo/Pej |
 
-Les étapes 1 à 4 se font sans payer Shopify. Le plan Basic (27 €/mois en annuel, 36 € en mensuel) ne démarre qu'à l'étape 5.
+Les étapes 0 à 4 se font sans payer Shopify. À l'étape 5 : 1 €/mois pendant 3 mois, puis Basic à 27 €/mois en annuel (36 € en mensuel).
 
 ## Ce qu'il faut côté Théo / Pej (sans jargon)
 
 - Créer le profil Thed sur Bandsintown for Artists. Bloquant pour les vraies dates (la maquette tourne sur des dates de démo d'ici là).
 - Photos des produits (t-shirt à plat et porté, poster accroché).
-- Au lancement : un e-mail pour recevoir la boutique, et l'accès Spotify for Artists.
+- Au lancement : les documents de l'asso (pour la boutique et les paiements), et l'accès Spotify for Artists.
+- Optionnel : si Théo a Spotify Premium sur son compte perso, créer une app sur developer.spotify.com.
 
-## Questions pour Pierre
+## Réponses de Pierre (26/11)
 
-- Valider les choix 1 à 8 (ou dire lesquels changer).
-- As-tu un compte Spotify Premium pour porter l'app Spotify (dernière sortie) ?
-- Nom de domaine à acheter ?
+- Boutique : créée au nom de l'asso, pour profiter de l'offre à 1 €. → Au lancement, dev sur boutique gratuite d'ici là (choix 3).
+- Spotify Premium : Pierre n'en a pas. → Apple (choix 6).
+- Domaine : pas de domaine au départ, coût minimum, pas de recherche de référencement, pas de `noindex` (choix 8).
+
+## Reste à valider
+
+- Choix 1, 2, 4, 5, 7.

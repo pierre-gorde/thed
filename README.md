@@ -24,6 +24,6 @@ Site de Thed (artiste) : vente du merch (t-shirts, posters), concerts à venir, 
 
 ## Coûts récurrents prévus
 
-- Shopify Basic : 27 €/mois en annuel (36 € en mensuel), seulement à partir du lancement. Boutique de dev gratuite avant.
+- Shopify : 0 € pendant le dev (boutique de dev). Au lancement, boutique de l'asso : 1 €/mois pendant 3 mois, puis Basic à 27 €/mois en annuel (36 € en mensuel).
 - Oxygen, Bandsintown, Spotify / Apple : 0 €.
-- Domaine : ~10-15 €/an.
+- Domaine : aucun au départ (URL Oxygen gratuite). ~10-15 €/an si on en prend un plus tard.
