@@ -11,7 +11,8 @@ On avance étape par étape. Chaque doc est court et se lit seul.
 | 05 | [Assets](./05-assets.md) | Ce qu'on a, ce qui manque |
 | 06 | [Directions visuelles](./06-directions-visuelles.md) | 3 prototypes mobiles animés |
 | 07 | [Base retenue : Thed · Merch](./07-base-merch.md) | Shopify headless, Bandsintown, dernière sortie auto |
-| 08 | [Plan de passage en production](./08-plan-production.md) | Archi à valider, étapes, ce qu'il faut côté client |
+| 08 | [Plan de passage en production](./08-plan-production.md) | Archi validée, étapes, ce qu'il faut côté client |
+| 09 | [Créer la boutique et brancher le site](./09-setup-boutique.md) | Pas à pas pour Pierre |
 
 ## Étapes
 
@@ -19,5 +20,6 @@ On avance étape par étape. Chaque doc est court et se lit seul.
 2. **Questions à Théo et Pej** : réglées le 23/11. Reste l'accès Spotify for Artists, pour le lancement. ✓
 3. **Directions visuelles** : 3 prototypes le 23/11, puis Embarquement et Merch simple en parallèle ([06](./06-directions-visuelles.md)). ✓
 4. **Choix de la base** : « Thed · Merch » (Merch simple + éléments d'Embarquement), le 26/11 ([07](./07-base-merch.md)). ✓
-5. **Plan de production et choix d'archi** ([08](./08-plan-production.md)). ← en cours, à valider par Pierre
-6. **Développement** sur une boutique Shopify de dev gratuite, puis lancement. Le plan Shopify payant ne démarre qu'à la mise en ligne.
+5. **Plan de production et choix d'archi** ([08](./08-plan-production.md)), validés par Pierre le 26/11. ✓
+6. **Développement** : projet Hydrogen installé (26/11). Boutique de l'asso à créer ([09](./09-setup-boutique.md)), puis catalogue et portage de la maquette. ← en cours
+7. **Lancement**.
