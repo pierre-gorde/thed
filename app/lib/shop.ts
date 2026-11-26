@@ -24,10 +24,9 @@ export const storefrontConfig = {
   storeDomain: "hydrogen-preview.myshopify.com", // ← default; or set PUBLIC_STORE_DOMAIN
 } as const;
 
-// Single-locale storefront: every request resolves to the default locale. Add
-// `routing` here to serve more locales by path prefix or hostname.
+// Site en français, prix en euros (France).
 export const i18n = defineShopifyI18n({
-  defaultLocale: { country: "US", language: "EN" },
+  defaultLocale: { country: "FR", language: "FR" },
 });
 
 // Real store iff a private Storefront API token is available and the store isn't
@@ -103,8 +102,8 @@ export function resolveShopIdentity(
 // Use Shopify's default consent banner and Customer Privacy behavior.
 export const analyticsConsent = {
   mode: "default-banner",
-  country: "US",
-  language: "EN",
+  country: "FR",
+  language: "FR",
 } as const;
 
 // Private Storefront API token for SSR requests. Read from the worker environment

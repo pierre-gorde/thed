@@ -21,6 +21,8 @@ export default async function handleRequest(
       storeDomain: shouldUseMockShop(env) ? getMockShopDomain(env) : getStoreDomain(env),
       checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
     },
+    // Pochettes Apple Music du bandeau « dernière sortie ».
+    directives: { imgSrc: ["https://*.mzstatic.com"] },
   });
 
   const body = await renderToReadableStream(

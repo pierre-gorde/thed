@@ -1,30 +1,20 @@
-import type { ReactElement } from "react";
+import type { Release } from "~/lib/thed-data";
 
-interface Announcement {
-  content: ReactElement;
-}
-
-// Add announcements as JSX elements here.
-const ANNOUNCEMENTS: Announcement[] = [];
-
-export function AnnouncementBar() {
-  if (ANNOUNCEMENTS.length === 0) return null;
-
+/** Bandeau du haut : dernière sortie de Thed, choisie automatiquement (Apple, côté serveur). */
+export function AnnouncementBar({ release }: { release: Release }) {
   return (
-    <div
-      role="region"
-      aria-label="Announcement"
-      className="bg-on-surface px-margin py-2.5 text-center"
-    >
-      <ul role="list">
-        {ANNOUNCEMENTS.map((announcement, index) => (
-          <AnnouncementBarItem key={index} {...announcement} />
-        ))}
-      </ul>
+    <div className="t-announce" role="region" aria-label="Dernière sortie">
+      <a href={release.href} target="_blank" rel="noopener">
+        {release.cover ? <img src={release.cover} alt="" width={20} height={20} /> : null}
+        <span className="t-new">{release.tag}</span>
+        <span>
+          {release.title}
+          <span className="t-cta">
+            {" "}
+            · <u>Écouter</u>
+          </span>
+        </span>
+      </a>
     </div>
   );
-}
-
-function AnnouncementBarItem({ content }: Announcement) {
-  return <li className="type-body-sm text-surface wrap-anywhere">{content}</li>;
 }

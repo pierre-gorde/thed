@@ -6,16 +6,15 @@ import {
   gql,
   type SelectedOption,
 } from "@shopify/hydrogen";
-import { ShopPayButton } from "@shopify/hydrogen/react";
-import { useEffect, useMemo, useState, type MouseEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 
 import { ProductCard, PRODUCT_CARD_FRAGMENT } from "~/components/ProductCard";
 import { openCartDrawer } from "~/lib/cart-drawer";
-import { formatPrice, salePercent } from "~/lib/money";
+import { formatPrice } from "~/lib/money";
 import { ProductProvider, useProductForm } from "~/lib/product";
 import { storefrontClientContext } from "~/lib/storefront";
-import { formatPageTitle, getShopNameFromRootMatch } from "~/lib/storefront-shop";
+import { shortPrice } from "~/lib/thed-data";
 
 import type { Route } from "./+types/product";
 
@@ -133,14 +132,15 @@ const PRODUCT_QUERY = gql(
   [PRODUCT_VARIANT_FRAGMENT, PRODUCT_CARD_FRAGMENT],
 );
 
-export function meta({ matches }: Route.MetaArgs) {
-  const shopName = getShopNameFromRootMatch(matches[0]);
+export function meta({ data }: Route.MetaArgs) {
+  const product = data?.product;
+  if (!product) return [{ title: "Thed" }];
+  const image = product.featuredImage?.url;
   return [
-    { title: formatPageTitle("Product", shopName) },
-    {
-      name: "description",
-      content: `Shop the ${shopName} product detail page.`,
-    },
+    { title: `${product.title} · Thed` },
+    { name: "description", content: product.description.slice(0, 160) },
+    { property: "og:title", content: product.title },
+    ...(image ? [{ property: "og:image", content: image }] : []),
   ];
 }
 
@@ -178,11 +178,6 @@ type ProductImage = {
   height?: number | null;
 };
 
-type SwatchValue = {
-  color?: string | null;
-  imageUrl?: string | null;
-};
-
 function toRouterLocation(url: string) {
   return url;
 }
@@ -200,29 +195,6 @@ function variantUrl(
   });
   const query = params.toString();
   return `/products/${handle}${query ? `?${query}` : ""}`;
-}
-
-function buildSwatchLookup(product: ProductData) {
-  const lookup = new Map<string, SwatchValue>();
-  for (const option of product.options) {
-    for (const value of option.optionValues) {
-      const swatch = value.swatch;
-      lookup.set(`${option.name}:${value.name}`, {
-        color: swatch?.color ?? null,
-        imageUrl: swatch?.image?.previewImage?.url ?? null,
-      });
-    }
-  }
-  return lookup;
-}
-
-function hasSwatchData(product: ProductData, optionName: string) {
-  const option = product.options.find((candidate) => candidate.name === optionName);
-  return Boolean(
-    option?.optionValues.some(
-      (value) => value.swatch?.color || value.swatch?.image?.previewImage?.url,
-    ),
-  );
 }
 
 function ProductViewedTracker({ product }: { product: ProductData }) {
@@ -247,6 +219,13 @@ function ProductViewedTracker({ product }: { product: ProductData }) {
   return null;
 }
 
+
+const OPTION_LABELS: Record<string, string> = { size: "Taille", color: "Couleur", couleur: "Couleur" };
+
+function optionLabel(name: string) {
+  return OPTION_LABELS[name.toLowerCase()] ?? name;
+}
+
 function useGalleryImages(product: ProductData, selectedVariant: ProductVariant | null) {
   return useMemo(() => {
     const images: ProductImage[] = [];
@@ -256,166 +235,74 @@ function useGalleryImages(product: ProductData, selectedVariant: ProductVariant 
       seen.add(image.url);
       images.push(image);
     };
-
     addImage(selectedVariant?.image ?? product.featuredImage ?? product.images.nodes[0]);
     for (const image of product.images.nodes) addImage(image);
     return images;
   }, [product, selectedVariant]);
 }
 
-function galleryDotClass(active: boolean) {
-  if (active) return "bg-on-surface size-2 rounded-full";
-  return "bg-on-surface/30 size-2 rounded-full";
-}
-
-function ProductGallery({
-  product,
-  selectedVariant,
-}: {
-  product: ProductData;
-  selectedVariant: ProductVariant | null;
-}) {
+/** Galerie en carrousel (glisser au doigt, ou toucher pour passer à la photo suivante). */
+function Gallery({ product, selectedVariant }: { product: ProductData; selectedVariant: ProductVariant | null }) {
   const images = useGalleryImages(product, selectedVariant);
-  const primaryImageUrl = images[0]?.url;
-  const [activeIndex, setActiveIndex] = useState(0);
+  const track = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState(0);
+  const first = images[0]?.url;
 
-  useEffect(() => setActiveIndex(0), [primaryImageUrl]);
+  useEffect(() => {
+    setActive(0);
+    track.current?.scrollTo({ left: 0 });
+  }, [first]);
+
+  const next = () => {
+    const el = track.current;
+    if (!el || images.length < 2) return;
+    const end = el.scrollLeft + el.clientWidth >= el.scrollWidth - 2;
+    el.scrollTo({ left: end ? 0 : el.scrollLeft + el.clientWidth, behavior: "smooth" });
+  };
 
   return (
     <div data-testid="product-gallery">
       <div
+        ref={track}
+        className="t-gal"
         role="region"
-        aria-roledescription="carousel"
-        aria-label={product.title}
-        className="relative grid"
+        aria-roledescription="carrousel"
+        aria-label={`Photos : ${product.title}`}
+        tabIndex={0}
+        onClick={next}
+        onScroll={(event) => {
+          const el = event.currentTarget;
+          if (el.clientWidth > 0) setActive(Math.round(el.scrollLeft / el.clientWidth));
+        }}
       >
-        <div
-          data-product-gallery-track
-          className="flex snap-x snap-mandatory overflow-x-auto md:grid md:grid-cols-2 md:overflow-visible"
-          style={{ scrollbarWidth: "none" }}
-          tabIndex={0}
-          onScroll={(event) => {
-            const track = event.currentTarget;
-            if (track.clientWidth > 0) {
-              setActiveIndex(Math.round(track.scrollLeft / track.clientWidth));
-            }
-          }}
-        >
-          {images.map((image, index) => (
-            <div
-              key={image.url}
-              role="group"
-              aria-roledescription="slide"
-              aria-label={`Slide ${index + 1} of ${images.length}`}
-              className="w-full shrink-0 snap-center contain-paint md:w-auto md:shrink"
-            >
-              <div className="bg-surface-secondary aspect-square overflow-hidden">
-                <img
-                  src={image.url}
-                  alt={image.altText ?? product.title}
-                  width={image.width ?? undefined}
-                  height={image.height ?? undefined}
-                  className="h-full w-full object-cover"
-                  loading={index === 0 ? "eager" : "lazy"}
-                  fetchPriority={index === 0 ? "high" : "auto"}
-                  data-testid={index === 0 ? "product-gallery-image" : undefined}
-                />
-              </div>
+        {images.length ? (
+          images.map((image, index) => (
+            <div key={image.url} className="t-media">
+              <img
+                src={image.url}
+                alt={image.altText ?? product.title}
+                width={image.width ?? undefined}
+                height={image.height ?? undefined}
+                loading={index === 0 ? "eager" : "lazy"}
+                fetchPriority={index === 0 ? "high" : "auto"}
+                data-testid={index === 0 ? "product-gallery-image" : undefined}
+              />
             </div>
-          ))}
-        </div>
-        {images.length > 1 ? (
-          <div className="absolute inset-x-0 bottom-4 z-10 flex items-center justify-center gap-3 md:hidden">
-            <div
-              data-slideshow-dots
-              role="group"
-              aria-label="Slideshow pagination"
-              className="flex items-center justify-center gap-2"
-            >
-              {images.map((image, index) => (
-                <span key={image.url} className={galleryDotClass(index === activeIndex)} />
-              ))}
-            </div>
-          </div>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
-function PriceBlock({
-  product,
-  selectedVariant,
-}: {
-  product: ProductData;
-  selectedVariant: ProductVariant | null;
-}) {
-  const price = selectedVariant?.price ?? product.priceRange.minVariantPrice;
-  const compareAt = selectedVariant?.compareAtPrice;
-  const percent = salePercent(price, compareAt);
-
-  return (
-    <div className="mt-4" data-product-price>
-      <div className="inline-flex flex-wrap items-baseline gap-2">
-        {compareAt && percent ? (
-          <>
-            <span className="text-sale font-medium">
-              <span className="sr-only">Sale price: </span>
-              {formatPrice(price)}
-            </span>
-            <s className="text-compare text-sm">
-              <span className="sr-only">Regular price: </span>
-              {formatPrice(compareAt)}
-            </s>
-            <span className="text-sale text-sm font-medium" aria-label={`Save ${percent}%`}>
-              (-{percent}%)
-            </span>
-          </>
+          ))
         ) : (
-          <span className="text-on-surface font-medium">
-            <span className="sr-only">Price: </span>
-            {formatPrice(price)}
-          </span>
+          <div className="t-media">
+            <span className="t-placeholder">Photo à venir</span>
+          </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function InventoryHint({ selectedVariant }: { selectedVariant: ProductVariant | null }) {
-  if (!selectedVariant) return null;
-  if (!selectedVariant.availableForSale) {
-    return (
-      <div className="mt-3">
-        <div className="flex items-center gap-2 text-sm" data-product-inventory>
-          <span
-            className="bg-critical inline-block h-2 w-2 shrink-0 rounded-full"
-            aria-hidden="true"
-          />
-          <span className="text-critical font-medium">Out of stock</span>
-        </div>
-      </div>
-    );
-  }
-
-  const quantity = selectedVariant.quantityAvailable;
-  if (quantity == null || quantity > 5) return null;
-
-  return (
-    <div className="mt-3">
-      <div className="flex items-center gap-2 text-sm" data-product-inventory>
-        <span
-          className="bg-warning inline-block h-2 w-2 shrink-0 rounded-full"
-          aria-hidden="true"
-        />
-        <span className="text-warning font-medium">Only {quantity} left in stock</span>
+      <div className="t-gdots" aria-hidden="true">
+        {images.length > 1 ? images.map((image, index) => <i key={image.url} className={index === active ? "t-on" : undefined} />) : null}
       </div>
     </div>
   );
 }
 
-// Mirrors React Router's own Link guard: a modified or non-primary click belongs to
-// the browser (new tab, new window), so the href must stay in charge of it.
+// Même garde que le Link de React Router : un clic modifié (nouvel onglet…) reste au navigateur.
 function isPlainActivation(event: MouseEvent<HTMLAnchorElement>) {
   return (
     !event.defaultPrevented &&
@@ -428,124 +315,59 @@ function isPlainActivation(event: MouseEvent<HTMLAnchorElement>) {
   );
 }
 
+/** Choix de la taille (ou autre option). Les produits sans variante n'affichent rien. */
 function VariantOptions({ product }: { product: ProductData }) {
   const { options, register } = useProductForm();
-  const swatches = useMemo(() => buildSwatchLookup(product), [product]);
   const location = useLocation();
   const baseParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const visible = options.filter((option) => option.values.length > 1 || option.values[0]?.name !== "Default Title");
 
   return (
-    <div className="swatch-buttons space-y-4">
-      {options.map((option) => {
-        const selectedValue = option.values.find((value) => value.selected)?.name;
-        const renderSwatches = hasSwatchData(product, option.name);
-        const isColorOption = option.name.toLowerCase().includes("color");
-
+    <>
+      {visible.map((option) => {
+        const selected = option.values.find((value) => value.selected)?.name;
         return (
-          <fieldset key={option.name} className="space-y-2">
-            <legend className="text-on-surface text-sm font-medium">
-              {option.name}
-              {selectedValue ? `: ${selectedValue}` : ""}
+          <fieldset key={option.name} className="t-sizes-wrap" style={{ border: 0, margin: 0, padding: 0 }}>
+            <legend className="t-lbl">
+              {optionLabel(option.name)}
+              {selected ? ` : ${selected}` : ""}
             </legend>
-            <div className="flex flex-wrap gap-2" role="group" aria-label={option.name}>
-              {option.values.map((variantOption) => {
-                const valueName = variantOption.name;
-                const registered = register("optionValue", {
-                  optionName: option.name,
-                  value: valueName,
-                });
-                const isCrossProduct = variantOption.handle !== product.handle;
-                const linkTarget = variantUrl(
-                  product,
-                  variantOption.selectedOptions,
-                  variantOption.handle,
-                  baseParams,
-                );
-                const soldOut = !variantOption.available;
-                const testId = isColorOption ? "color-swatch" : undefined;
-                const swatch = renderSwatches ? swatches.get(`${option.name}:${valueName}`) : null;
-                const swatchStyle = swatch?.imageUrl
-                  ? { backgroundImage: `url("${swatch.imageUrl}")` }
-                  : { backgroundColor: swatch?.color ?? undefined };
+            <div className="t-sizes" role="group" aria-label={optionLabel(option.name)}>
+              {option.values.map((value) => {
+                const registered = register("optionValue", { optionName: option.name, value: value.name });
+                const isCrossProduct = value.handle !== product.handle;
+                const soldOut = !value.available;
+                const label = `${value.name}${soldOut ? " (épuisé)" : ""}`;
 
-                const className = renderSwatches
-                  ? `min-h-touch-target min-w-touch-target relative inline-flex cursor-pointer items-center justify-center motion-safe:transition-transform motion-safe:active:scale-[0.93] ${soldOut ? "opacity-50" : ""}`
-                  : `option-pill focus-visible:outline-accent motion-safe:transition-[color,background-color,border-color,transform] motion-safe:active:scale-[0.97] ${variantOption.selected ? "is-selected" : ""} ${soldOut ? "opacity-50" : ""}`;
-                const content = renderSwatches ? (
-                  <>
-                    <span
-                      className={`swatch-md border-border relative inline-flex items-center justify-center overflow-hidden rounded-full border-2 ring-offset-2 ${variantOption.selected ? "border-interactive" : ""}`}
-                      style={swatchStyle}
-                    >
-                      {variantOption.selected ? (
-                        <span className="swatch-scrim absolute inset-0" />
-                      ) : null}
-                      {soldOut ? (
-                        <svg
-                          className="absolute inset-0 h-full w-full"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          aria-hidden="true"
-                        >
-                          <line x1="4" y1="4" x2="20" y2="20" />
-                        </svg>
-                      ) : null}
-                    </span>
-                    <span className="sr-only">
-                      {valueName}
-                      {soldOut ? " (Sold out)" : ""}
-                    </span>
-                  </>
-                ) : (
-                  `${valueName}${soldOut ? " (Sold out)" : ""}`
-                );
-
-                if (!isCrossProduct && !variantOption.exists) {
+                if (!isCrossProduct && !value.exists) {
                   return (
-                    <button
-                      key={valueName}
-                      type="button"
-                      disabled
-                      className={className}
-                      aria-label={renderSwatches ? valueName : undefined}
-                      aria-pressed={variantOption.selected}
-                      data-testid={testId}
-                    >
-                      {content}
+                    <button key={value.name} type="button" className="t-size" disabled aria-pressed={value.selected}>
+                      {value.name}
                     </button>
                   );
                 }
 
-                // Every selectable value is an <a> whichever product it belongs to. The
-                // activated value flips from cross-product to same-product after the
-                // navigation, and a change of element type there would remount the
-                // focused control and drop focus to <body>.
                 return (
                   <Link
-                    key={valueName}
-                    to={toRouterLocation(linkTarget)}
+                    key={value.name}
+                    to={variantUrl(product, value.selectedOptions, value.handle, baseParams)}
                     replace={!isCrossProduct}
                     preventScrollReset
-                    className={className}
-                    aria-label={renderSwatches ? valueName : undefined}
-                    aria-current={variantOption.selected ? "true" : undefined}
-                    data-testid={testId}
+                    className="t-size"
+                    aria-label={label}
+                    aria-current={value.selected ? "true" : undefined}
+                    aria-disabled={soldOut ? "true" : undefined}
                     onClick={
                       isCrossProduct
                         ? undefined
                         : (event) => {
                             if (!isPlainActivation(event)) return;
                             registered.onClick();
-                            // onSelect has already navigated with the provider's replace
-                            // and revalidation settings. Letting Link navigate too would
-                            // refetch the loader that a resolved selection just skipped.
                             event.preventDefault();
                           }
                     }
                   >
-                    {content}
+                    {value.name}
                   </Link>
                 );
               })}
@@ -553,231 +375,91 @@ function VariantOptions({ product }: { product: ProductData }) {
           </fieldset>
         );
       })}
-    </div>
-  );
-}
-
-function QuantitySelector({
-  quantity,
-  setQuantity,
-}: {
-  quantity: number;
-  setQuantity: (quantity: number) => void;
-}) {
-  const { register } = useProductForm();
-  const clamp = (value: number) => Math.min(99, Math.max(1, value));
-
-  return (
-    <div className="shrink-0">
-      <label className="text-on-surface mb-2 block text-sm font-medium" htmlFor="quantity">
-        Quantity
-      </label>
-      <div
-        className="quantity-selector-outlined rounded-input inline-flex items-center"
-        data-testid="quantity-stepper"
-      >
-        <button
-          type="button"
-          className="text-on-surface-secondary hover:text-on-surface inline-flex size-11 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50 motion-safe:transition-[color,transform] motion-safe:active:scale-[0.90]"
-          aria-label="Decrease quantity"
-          onClick={() => setQuantity(clamp(quantity - 1))}
-          disabled={quantity <= 1}
-        >
-          <img src="/icons/icon-minus.svg" alt="" className="size-4" aria-hidden="true" />
-        </button>
-        <input
-          type="number"
-          id="quantity"
-          {...register("quantity", { value: quantity })}
-          min={1}
-          max={99}
-          step={1}
-          className="number-reset text-on-surface h-11 w-12 rounded-none border-0 bg-transparent p-0 text-center text-sm"
-          aria-label="Quantity"
-          onChange={(event) =>
-            setQuantity(clamp(Number.parseInt(event.currentTarget.value, 10) || 1))
-          }
-        />
-        <button
-          type="button"
-          className="text-on-surface-secondary hover:text-on-surface inline-flex size-11 items-center justify-center disabled:cursor-not-allowed disabled:opacity-50 motion-safe:transition-[color,transform] motion-safe:active:scale-[0.90]"
-          aria-label="Increase quantity"
-          onClick={() => setQuantity(clamp(quantity + 1))}
-          disabled={quantity >= 99}
-        >
-          <img src="/icons/icon-plus.svg" alt="" className="size-4" aria-hidden="true" />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function AddToCart({
-  product,
-  quantity,
-  setQuantity,
-  selectedVariant,
-}: {
-  product: ProductData;
-  quantity: number;
-  setQuantity: (quantity: number) => void;
-  selectedVariant: ProductVariant | null;
-}) {
-  const { options, register, formProps, errors, pending } = useProductForm();
-  const addable = canAddToCart(product, options);
-  const buttonText = addable ? "Add to cart" : selectedVariant ? "Sold out" : "Select options";
-
-  return (
-    <>
-      <form {...formProps({ afterSubmit: openCartDrawer })}>
-        <div className="mt-6 mb-10 flex items-center gap-4">
-          <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
-        </div>
-        <input type="hidden" {...register("merchandiseId", {})} />
-        <button
-          {...register("addToCart", {})}
-          className="rounded-button button-primary focus-visible:outline-accent inline-flex h-11 w-full cursor-pointer items-center justify-center gap-2 px-3 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 motion-safe:transition-[color,background-color,border-color,transform] motion-safe:active:scale-[0.97]"
-          disabled={!addable || pending}
-          data-testid="add-to-cart"
-        >
-          {buttonText}
-        </button>
-      </form>
-      {selectedVariant ? (
-        <div className="mt-3">
-          <ShopPayButton
-            variants={[{ id: selectedVariant.id, quantity }]}
-            disabled={!addable || pending}
-            width="100%"
-            borderRadius="8px"
-          />
-        </div>
-      ) : null}
-      {[...errors.userErrors, ...errors.warnings, ...errors.networkErrors].length ? (
-        <div className="mt-3 grid gap-1 text-sm" role="alert">
-          {errors.userErrors.map((error) => (
-            <p key={error.message} className="text-critical">
-              {error.message}
-            </p>
-          ))}
-          {errors.warnings.map((warning) => (
-            <p key={warning.message} className="text-warning">
-              {warning.message}
-            </p>
-          ))}
-          {errors.networkErrors.map((error) => (
-            <p key={error.message} className="text-critical">
-              {error.message}
-            </p>
-          ))}
-        </div>
-      ) : null}
     </>
   );
 }
 
-function ProductInfo({
-  product,
-  selectedVariant,
-}: {
-  product: ProductData;
-  selectedVariant: ProductVariant | null;
-}) {
-  const [quantity, setQuantity] = useState(1);
+function AddToCart({ product, selectedVariant }: { product: ProductData; selectedVariant: ProductVariant | null }) {
+  const { options, register, formProps, errors, pending } = useProductForm();
+  const addable = canAddToCart(product, options);
+  const label = pending ? "Ajout…" : addable ? "Ajouter au panier" : selectedVariant ? "Épuisé" : "Choisis une taille";
+  const messages = [...errors.userErrors, ...errors.warnings, ...errors.networkErrors].map((error) => error.message);
 
   return (
-    <div className="flex flex-col gap-6 md:sticky md:top-8 md:self-start">
-      <div className="pt-4 md:pt-8">
-        {product.vendor ? (
-          <p className="type-body-sm text-on-surface-secondary mb-4 tracking-wide uppercase">
-            {product.vendor}
-          </p>
-        ) : null}
-        <h1 className="type-display text-on-surface">{product.title}</h1>
-        <PriceBlock product={product} selectedVariant={selectedVariant} />
-        <InventoryHint selectedVariant={selectedVariant} />
-      </div>
-
-      <span className="sr-only" aria-live="polite" id="inventory-status" />
-
-      {product.description ? (
-        <div className="type-body-sm text-on-surface-secondary leading-relaxed">
-          {product.description}
+    <form {...formProps({ afterSubmit: openCartDrawer })}>
+      <input type="hidden" {...register("quantity", { value: 1 })} />
+      <input type="hidden" {...register("merchandiseId", {})} />
+      <button {...register("addToCart", {})} className="t-btn t-full" disabled={!addable || pending} data-testid="add-to-cart">
+        {label}
+      </button>
+      {messages.length ? (
+        <div className="t-errors" role="alert">
+          {messages.map((message) => (
+            <p key={message}>{message}</p>
+          ))}
         </div>
       ) : null}
+    </form>
+  );
+}
 
-      <div data-product-form>
-        <span className="sr-only" aria-live="polite" data-add-to-cart-status />
-        <VariantOptions product={product} />
-        <AddToCart
-          product={product}
-          quantity={quantity}
-          setQuantity={setQuantity}
-          selectedVariant={selectedVariant}
-        />
+function ProductInfo({ product, selectedVariant }: { product: ProductData; selectedVariant: ProductVariant | null }) {
+  const price = selectedVariant?.price ?? product.priceRange.minVariantPrice;
+  const compareAt = selectedVariant?.compareAtPrice;
+  const quantity = selectedVariant?.availableForSale ? selectedVariant.quantityAvailable : null;
+
+  return (
+    <div className="t-pv-info">
+      <span className="t-lbl">Thed</span>
+      <h1>{product.title}</h1>
+      <div className="t-price" data-product-price>
+        {shortPrice(formatPrice(price))}
+        {compareAt && Number(compareAt.amount) > Number(price.amount) ? <s>{shortPrice(formatPrice(compareAt))}</s> : null}
       </div>
-
-      <h2 className="sr-only">Product details</h2>
-      <details className="group border-border border-t border-b" name="product-details" open>
-        <summary className="marker-hidden text-on-surface hover:text-on-surface-secondary flex cursor-pointer items-center justify-between px-1 py-4 text-sm font-medium">
-          <span className="text-sm font-medium">Description</span>
-          <span
-            className="ms-4 size-4 shrink-0 group-open:rotate-180 motion-safe:transition-transform motion-safe:duration-200"
-            aria-hidden="true"
-          >
-            <img src="/icons/icon-chevron-down.svg" alt="" className="size-4" />
-          </span>
-        </summary>
-        <div className="richtext text-on-surface-secondary px-1 pb-4 text-sm">
-          {product.descriptionHtml ? (
-            <div dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
-          ) : (
-            <p>{product.description}</p>
-          )}
-        </div>
-      </details>
+      {product.descriptionHtml ? (
+        <div className="t-desc" dangerouslySetInnerHTML={{ __html: product.descriptionHtml }} />
+      ) : (
+        <p className="t-desc">{product.description}</p>
+      )}
+      <VariantOptions product={product} />
+      {quantity != null && quantity > 0 && quantity <= 5 ? (
+        <p className="t-stock">Plus que {quantity} en stock</p>
+      ) : null}
+      <AddToCart product={product} selectedVariant={selectedVariant} />
+      <div className="t-ship">
+        <span>Expédié sous 7 jours depuis Paris.</span>
+        <span>Aussi en vente au stand merch des concerts.</span>
+      </div>
     </div>
   );
 }
 
 function ProductPageContent({ product }: { product: ProductData }) {
   const { selectedVariant } = useProductForm();
-
   return (
-    <section className="max-w-page px-margin mx-auto w-full pb-4">
-      <div className="product-grid mb-16 grid grid-cols-1 gap-6 md:gap-12">
-        <ProductGallery product={product} selectedVariant={selectedVariant} />
-        <ProductInfo product={product} selectedVariant={selectedVariant} />
-      </div>
-    </section>
+    <div className="t-pv">
+      <Gallery product={product} selectedVariant={selectedVariant} />
+      <ProductInfo product={product} selectedVariant={selectedVariant} />
+    </div>
   );
 }
 
 function RelatedProducts({ products }: { products: RelatedProduct[] }) {
   if (products.length === 0) return null;
-
   return (
-    <section className="py-4" aria-labelledby="related-products-heading">
-      <div className="border-border border-t pt-12">
-        <h2
-          id="related-products-heading"
-          className="type-heading-xl max-w-page px-margin mx-auto mb-8"
-        >
-          More products
+    <section className="t-section" aria-labelledby="related-title">
+      <div className="t-shead">
+        <h2 id="related-title" className="t-h2">
+          Aussi dans le merch
         </h2>
-        <div className="max-w-page px-margin mx-auto contain-paint">
-          <ul
-            role="list"
-            className="grid grid-cols-1 gap-x-1 gap-y-10 md:grid-cols-2 lg:grid-cols-4"
-          >
-            {products.map((product) => (
-              <li key={product.handle}>
-                <ProductCard product={product} />
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
+      <ul className="t-grid">
+        {products.map((product) => (
+          <li key={product.id}>
+            <ProductCard product={product} />
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
@@ -792,12 +474,7 @@ export default function ProductRoute({ loaderData }: Route.ComponentProps) {
       product={product}
       onSelect={(result) => {
         const url = toRouterLocation(
-          variantUrl(
-            product,
-            result.selectedOptions,
-            result.selectedVariant?.product?.handle,
-            new URLSearchParams(location.search),
-          ),
+          variantUrl(product, result.selectedOptions, result.selectedVariant?.product?.handle, new URLSearchParams(location.search)),
         );
         void navigate(url, {
           replace: true,
@@ -807,7 +484,10 @@ export default function ProductRoute({ loaderData }: Route.ComponentProps) {
       }}
     >
       <ProductViewedTracker product={product} />
-      <main className="flex-1" id="main-content" tabIndex={-1}>
+      <main className="t-main t-wrap t-product" id="main-content" tabIndex={-1}>
+        <Link className="t-back" to="/#merch">
+          ← Tout le merch
+        </Link>
         <ProductPageContent product={product} />
         <RelatedProducts products={relatedProducts} />
       </main>

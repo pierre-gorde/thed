@@ -6,7 +6,9 @@ Site de Thed (artiste) : vente du merch (t-shirts, posters), concerts à venir, 
 
 - Maquette validée : « Thed · Merch » → [`prototypes/04-merch-simple.html`](./prototypes/04-merch-simple.html) ([doc/07](./doc/07-base-merch.md)).
 - Plan de production validé : [doc/08](./doc/08-plan-production.md).
-- Code : template Hydrogen 2026-10 officiel (React Router) installé, tourne sur des produits de démo. Prochaine étape : créer la boutique ([doc/09](./doc/09-setup-boutique.md)), puis porter la maquette.
+- Boutique Shopify « Thed » créée et reliée (Oxygen) : t-shirt PLDV et poster A1 en ligne côté admin.
+- Maquette portée dans `app/` : bandeau dernière sortie (Apple), header, vidéo d'intro, grille merch, fiche produit, panier en tiroir, concerts (Bandsintown, démo sans clé), live session, pages légales.
+- Gérer le contenu sans code : [doc/10](./doc/10-gerer-le-site.md).
 
 ## Stack retenue
 

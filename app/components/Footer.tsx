@@ -1,62 +1,49 @@
 import { Link } from "react-router";
 
-import type { StorefrontShop } from "~/lib/storefront-shop";
+import { LINKS } from "~/lib/thed-data";
 
-import { PaymentMethodIcon } from "./PaymentMethodIcon";
+import { Logo } from "./Logo";
 
-const linkClass =
-  "min-h-touch-target text-on-surface-secondary hover:text-on-surface focus-visible:outline-accent inline-flex items-center font-normal no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 motion-safe:transition-colors";
+const ext = { target: "_blank", rel: "noopener" } as const;
 
-export function Footer({ shopInfo }: { shopInfo: StorefrontShop }) {
+export function Footer() {
   return (
-    <footer className="max-w-page px-margin mx-auto w-full">
-      <div
-        className={`border-border grid grid-cols-1 gap-8 border-t py-12 text-sm md:grid-cols-2 ${shopInfo.paymentMethods.length > 0 ? "lg:grid-cols-3" : ""}`}
-      >
-        <div className="min-w-0 wrap-anywhere">
-          <h2 className="type-body-sm text-on-surface mb-4 font-medium">{shopInfo.name}</h2>
-        </div>
-        <nav aria-labelledby="footer-customer-care-heading">
-          <h2
-            className="type-body-sm text-on-surface mb-4 font-medium"
-            id="footer-customer-care-heading"
-          >
-            Customer care
-          </h2>
-          <ul role="list" className="flex flex-col gap-2">
-            <li>
-              <Link to="/search" className={linkClass}>
-                Search
-              </Link>
-            </li>
-            <li>
-              <Link to="/account" className={linkClass}>
-                Account
-              </Link>
-            </li>
-          </ul>
-        </nav>
-        {shopInfo.paymentMethods.length > 0 ? (
+    <footer className="t-footer">
+      <div className="t-wrap">
+        <div className="t-cols">
           <div>
-            <h2
-              id="footer-payment-methods-heading"
-              className="type-body-sm text-on-surface mb-4 font-medium"
-            >
-              Payment methods
-            </h2>
-            <ul
-              role="list"
-              aria-labelledby="footer-payment-methods-heading"
-              className="flex flex-wrap items-center gap-2"
-            >
-              {shopInfo.paymentMethods.map((method) => (
-                <li key={method} className="max-w-full">
-                  <PaymentMethodIcon method={method} />
-                </li>
-              ))}
+            <Link className="t-logo" to="/" aria-label="Thed">
+              <Logo />
+            </Link>
+          </div>
+          <div>
+            <h4>Suivre</h4>
+            <ul>
+              <li><a href={LINKS.instagram} {...ext}>Instagram</a></li>
+              <li><a href={LINKS.tiktok} {...ext}>TikTok</a></li>
+              <li><a href={LINKS.youtube} {...ext}>YouTube</a></li>
             </ul>
           </div>
-        ) : null}
+          <div>
+            <h4>Écouter</h4>
+            <ul>
+              <li><a href={LINKS.spotify} {...ext}>Spotify</a></li>
+              <li><a href={LINKS.appleMusic} {...ext}>Apple Music</a></li>
+              <li><a href={LINKS.deezer} {...ext}>Deezer</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Infos</h4>
+            <ul>
+              <li><Link to="/policies/shipping-policy">Livraison</Link></li>
+              <li><Link to="/policies/refund-policy">Retours</Link></li>
+              <li><Link to="/policies/terms-of-sale">CGV</Link></li>
+              <li><Link to="/policies/legal-notice">Mentions légales</Link></li>
+              <li><Link to="/policies/privacy-policy">Confidentialité</Link></li>
+            </ul>
+          </div>
+        </div>
+        <p className="t-fine">© {new Date().getFullYear()} THED PRODUCTION</p>
       </div>
     </footer>
   );
