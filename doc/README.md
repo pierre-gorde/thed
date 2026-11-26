@@ -10,6 +10,7 @@ On avance étape par étape. Chaque doc est court et se lit seul.
 | 04 | [Logistique du merch](./04-logistique-merch.md) | Expédition, emballage, vente en concert |
 | 05 | [Assets](./05-assets.md) | Ce qu'on a, ce qui manque |
 | 06 | [Directions visuelles](./06-directions-visuelles.md) | 3 prototypes mobiles animés |
+| 07 | [Base retenue : Thed · Merch](./07-base-merch.md) | Shopify headless, Bandsintown, dernière sortie auto |
 
 ## Étapes
 
