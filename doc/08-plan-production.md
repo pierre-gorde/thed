@@ -1,7 +1,7 @@
 # 08 — Plan de passage en production
 
 > 26/11/2026. La maquette « Thed · Merch » est validée ([07](./07-base-merch.md)). Ce doc fixe l'archi et l'ordre des étapes.
-> **Statut : à valider par Pierre. Le dev ne démarre pas avant.**
+> **Statut : validé par Pierre le 26/11/2026.** Setup du code fait, création de la boutique : [09](./09-setup-boutique.md).
 
 ## Ce qui est déjà décidé
 
@@ -71,7 +71,7 @@ Spotify (onglet Merch) ── canal Spotify dans Shopify → liens vers /product
 
 | Étape | Contenu | Qui |
 | --- | --- | --- |
-| 0. Setup | Boutique Shopify au nom de l'asso, canal Hydrogen, lien repo ↔ Oxygen, projet Hydrogen 2026-10 dans le repo, CI (lint, types, build) | Pierre (comptes) + Claude (code) |
+| 0. Setup | Projet Hydrogen 2026-10 dans le repo + CI (fait le 26/11). Boutique Shopify au nom de l'asso, canal Hydrogen, lien repo ↔ Oxygen ([09](./09-setup-boutique.md)) | Pierre (comptes) + Claude (code) |
 | 1. Catalogue | T-shirt (S/M/L/XL, 90 pièces), poster A1 (200), photos, prix provisoires, metaobjects « Réglages du site » | Claude, photos de Pej |
 | 2. Front | Portage de la maquette : accueil, fiche produit, panier en tiroir, concerts Bandsintown, dernière sortie, live session, pages légales | Claude |
 | 3. Checkout | Livraison France (Colissimo / Mondial Relay), retrait en main propre, « expédié sous 7 jours », CGV, mentions légales, « TVA non applicable » à valider | Claude + Pierre |
@@ -93,6 +93,4 @@ Coût Shopify : 3 jours gratuits, 1 €/mois pendant 3 mois, puis Basic à 27 �
 - Spotify Premium : Pierre n'en a pas. → Apple (choix 6).
 - Domaine : pas de domaine au départ, coût minimum, pas de recherche de référencement, pas de `noindex` (choix 8).
 
-## Reste à valider
-
-- Choix 1, 2, 4, 5, 7.
+- Choix 1, 2, 4, 5, 7 : validés tels quels.
