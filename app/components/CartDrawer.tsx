@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { useCart, useCartForm } from "~/lib/cart";
 import { closeCartDrawer, configureOpenCartAction, CART_DRAWER_ID } from "~/lib/cart-drawer";
 import { formatPrice } from "~/lib/money";
-import { shortPrice } from "~/lib/thed-data";
+import { optionLabel, shortPrice } from "~/lib/thed-data";
 
 import { publishCartViewed } from "./AnalyticsTrackers";
 
@@ -83,7 +83,7 @@ export function CartLineItem({
   const title = product?.title ?? merchandise?.title ?? "Article";
   const optionText = merchandise?.selectedOptions
     ?.filter((option) => option.value !== "Default Title")
-    .map((option) => `${option.name === "Size" || option.name === "Taille" ? "Taille " : ""}${option.value}`)
+    .map((option) => `${optionLabel(option.name) === "Taille" ? "Taille " : ""}${option.value}`)
     .join(" / ");
   const errorId = `cart-line-error-${line.id.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
 

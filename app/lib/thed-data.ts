@@ -201,6 +201,13 @@ export function shortPrice(formatted: string): string {
   return formatted.replace(/[,.]00(?=\D*$)/, "");
 }
 
+/** Nom d'option affiché : « Size » → « Taille », y compris dans un pack (« T-shirt … (Size) »). */
+export function optionLabel(name: string): string {
+  if (/\b(size|taille)\b/i.test(name)) return "Taille";
+  if (/\b(colou?r|couleur)\b/i.test(name)) return "Couleur";
+  return name;
+}
+
 /** Badge d'une carte produit, lu dans les tags Shopify : `badge:Nouveau`. */
 export function badgeFromTags(tags: readonly string[]): string | null {
   const tag = tags.find((value) => value.toLowerCase().startsWith("badge:"));

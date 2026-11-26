@@ -6,6 +6,7 @@ import {
   FALLBACK_RELEASE,
   LINKS,
   badgeFromTags,
+  optionLabel,
   gigDateParts,
   pickLatestRelease,
   shortPrice,
@@ -75,4 +76,11 @@ test("prix courts et badges", () => {
   assert.equal(shortPrice("19,90 €"), "19,90 €");
   assert.equal(badgeFromTags(["merch", "badge:Tirage limité"]), "Tirage limité");
   assert.equal(badgeFromTags(["merch"]), null);
+});
+
+test("optionLabel traduit la taille, aussi dans un pack", () => {
+  assert.equal(optionLabel("Size"), "Taille");
+  assert.equal(optionLabel("T-shirt Première leçon de vol (Size)"), "Taille");
+  assert.equal(optionLabel("Color"), "Couleur");
+  assert.equal(optionLabel("Format"), "Format");
 });
