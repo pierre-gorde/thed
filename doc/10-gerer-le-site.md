@@ -1,6 +1,10 @@
 # 10 — Gérer le site depuis l'admin Shopify
 
 > 26/11/2026. Tout se modifie dans l'admin Shopify, sans toucher au code. Le site se met à jour tout seul (quelques minutes au plus).
+>
+> Version simple pour Théo et Pej (non-dev) : [Gérer le site Thed](https://claude.ai/artifact/39EupPSkenTzUrzD1pExEX). Cette page-ci reste la référence technique.
+>
+> En place dans la boutique : metaobject `reglages_site` / `reglages-du-site` (lien et texte live remplis, médias vides = défauts du site), collection `accueil` (t-shirt, poster, pack), pack 35 € via l'app Shopify Bundles (option « T-shirt … (Size) », affichée « Taille »).
 
 ## Produits (Produits)
 
