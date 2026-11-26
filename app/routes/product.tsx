@@ -14,7 +14,7 @@ import { openCartDrawer } from "~/lib/cart-drawer";
 import { formatPrice } from "~/lib/money";
 import { ProductProvider, useProductForm } from "~/lib/product";
 import { storefrontClientContext } from "~/lib/storefront";
-import { shortPrice } from "~/lib/thed-data";
+import { optionLabel, shortPrice } from "~/lib/thed-data";
 
 import type { Route } from "./+types/product";
 
@@ -219,12 +219,6 @@ function ProductViewedTracker({ product }: { product: ProductData }) {
   return null;
 }
 
-
-const OPTION_LABELS: Record<string, string> = { size: "Taille", color: "Couleur", couleur: "Couleur" };
-
-function optionLabel(name: string) {
-  return OPTION_LABELS[name.toLowerCase()] ?? name;
-}
 
 function useGalleryImages(product: ProductData, selectedVariant: ProductVariant | null) {
   return useMemo(() => {
