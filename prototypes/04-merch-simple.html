@@ -17,7 +17,7 @@
     --font: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
     --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
     /* Night tones + rounded corners borrowed from the Embarquement version */
-    --night: #060a14;
+    --night: #000;
     --ink: #f4f2ec;
     --ink-soft: rgba(244,242,236,.66);
     --night-line: rgba(255,255,255,.12);
@@ -38,16 +38,16 @@
   .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
   /* Announcement (latest release, loaded live) + dark header */
-  .announce { background: #000; color: var(--ink); text-align: center; font: 600 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 8px var(--gutter-r) 8px var(--gutter-l); padding-top: calc(8px + env(safe-area-inset-top, 0px)); min-height: 36px; display: flex; align-items: center; justify-content: center; }
+  .announce { background: #fff; color: var(--fg); border-bottom: 1px solid var(--line); text-align: center; font: 600 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 8px var(--gutter-r) 8px var(--gutter-l); padding-top: calc(8px + env(safe-area-inset-top, 0px)); min-height: 36px; display: flex; align-items: center; justify-content: center; }
   .announce a { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; min-width: 0; max-width: 100%; }
   .announce a > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
   .announce img { width: 20px; height: 20px; border-radius: 4px; object-fit: cover; flex: none; }
-  .announce .new { flex: none; color: #111; background: var(--ink); padding: 4px 6px; border-radius: 4px; }
+  .announce .new { flex: none; color: #fff; background: var(--fg); padding: 4px 6px; border-radius: 4px; }
   .announce u { text-decoration: underline; text-underline-offset: 3px; }
   @media (max-width: 420px) { .announce .cta { display: none; } .announce a { gap: 8px; } }
   .announce a { transition: opacity .5s ease; }
   .announce.loading a { opacity: 0; }
-  header.top { position: sticky; top: 0; z-index: 20; background: rgba(6,10,20,.9); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--night-line); color: var(--ink); }
+  header.top { position: sticky; top: 0; z-index: 20; background: rgba(0,0,0,.96); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--night-line); color: var(--ink); }
   header.top .wrap { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 16px; height: 60px; }
   .logo { display: block; width: 74px; }
   .logo svg { width: 100%; height: auto; display: block; fill: var(--fg); }
