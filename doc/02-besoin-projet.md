@@ -49,7 +49,7 @@ On livre 1 à 3 propositions de concept, **dans une étape suivante**. Ce doc ne
 | Vidéo plein écran en arrivant | Pej | Pas comme contrainte. Le concept décidera |
 | Espace tournée | Pej | Oui, c'est dans le besoin (concerts) |
 | Merch sur Spotify | Pej | Oui, obligatoire |
-| Domaine type shop.thed.com | Pierre / Pej | À trancher. Aucun domaine possédé aujourd'hui |
+| Domaine type shop.thed.com | Pierre / Pej | À trancher (voir [08](./08-plan-production.md)). Aucun domaine possédé aujourd'hui |
 
 ## Le vendeur
 
@@ -78,5 +78,6 @@ On livre 1 à 3 propositions de concept, **dans une étape suivante**. Ce doc ne
 
 ## Questions qui restent
 
-- **Spotify** : qui peut se connecter à *Spotify for Artists* pour Thed ? À poser **après le choix des maquettes et de la stack**.
+- **Spotify** : qui peut se connecter à *Spotify for Artists* pour Thed ? À poser maintenant que la base est choisie (utile au lancement).
+- **Bandsintown** : créer le profil Thed (voir [07](./07-base-merch.md)).
 - Auteurs du clip « Train » et de la live session, pour les crédits.

@@ -1,5 +1,7 @@
 # 06 — Directions visuelles
 
+> **Historique.** Base finale retenue le 26/11 : « Thed · Merch », voir [07](./07-base-merch.md). Embarquement n'est plus développé, on en reprend quelques éléments.
+
 > 23/11/2026. Trois prototypes mobiles animés, testables sur téléphone. Indépendants de la stack : tout est faisable en headless (Shopify + Next.js ou Hydrogen).
 > Code : dossier [`prototypes/`](../prototypes/). Prix et dates de concert **fictifs**.
 > Liens (privés, à partager depuis le menu Partager) : [Le vol](https://claude.ai/artifact/FZoGmHsaibf1JC4SJEdNY2) · [Carnet de vol](https://claude.ai/artifact/WRueCsEk1F5oYPdKRpKRsV) · [Embarquement](https://claude.ai/artifact/1DvCzyjZyEV8pZm7m1rchF).
@@ -45,7 +47,7 @@ Vidéos : extraits de `bon.mp4` (9 s, live) et `réél_1.mp4` (7 s, live session
 
 Leçon : ne pas coller littéralement à l'EP. Le site doit tenir aux prochaines sorties.
 
-## Choix : Embarquement (23/11, 16h48)
+## Choix : Embarquement (23/11, 16h48, remplacé le 26/11)
 
 V3 :
 - Avion en papier blanc qui descend avec le scroll, trace en pointillés.

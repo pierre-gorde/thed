@@ -3,6 +3,7 @@
 > 26/11/2026. Pierre part sur la version « Merch simple » (`prototypes/04-merch-simple.html`) comme base du site.
 > Stack : **Shopify headless** (Shopify Basic + Oxygen, merch relié à la fiche Spotify). Stripe écarté.
 > Maquette : https://claude.ai/artifact/AewBbwE5cNTVj18AQMTcAK
+> Passage en production : [08](./08-plan-production.md).
 
 ## Changements V2 (repris d'Embarquement)
 
@@ -18,7 +19,7 @@
 - Clé : gratuite, une par artiste. Bandsintown for Artists > Settings > General > Get API Key. Pas de demande à faire. Pas de clé publique fournie pour un artiste tiers.
 - **Bloquant** : Thed n'a pas encore de profil Bandsintown → à créer / réclamer (Théo ou Pej).
 - Shotgun pousse déjà les events sur Bandsintown (partenaire) : une fois le profil créé, rien à saisir en double.
-- Site final : appel côté serveur (route Next.js, cache 1 h), la clé ne part pas dans le navigateur.
+- Site final : appel côté serveur (loader Hydrogen sur Oxygen, cache 1 h), la clé ne part pas dans le navigateur.
 - Affichage : à venir (tri croissant) + 3 derniers passés, bascule auto le lendemain. Boutons : Billets / Complet / Me prévenir (lien Bandsintown `trigger=notify_me`). Liste vide → message + lien Suivre.
 - Maquette : pas de clé → données de démo (fallback). Même code avec une clé.
 
